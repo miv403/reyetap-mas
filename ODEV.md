@@ -74,4 +74,3 @@ bir aşçı aynı anda bir tek yemek yapabilmekte bundan
 kuyruğuna alınmalıdır.
 
 [^1]: [cppref boolean](https://en.cppreference.com/w/c/types/boolean)
-
