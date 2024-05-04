@@ -1,0 +1,8 @@
+Yemek Adı     | Yemek Fiyatı | Hazırlanma Süresi (dk) | Durum
+----------------------------------------------------------------
+Lahmacun      | 75 TL        | 20                     | Mevcut
+Hamburger     | 250 TL       | 30                     | Mevcut
+Mantı         | 170 TL       | 45                     | Mevcut Değil
+Tost          | 60 TL        | 10                     | Mevcut
+Tavuk Dürüm   | 80 TL        | 15                     | Mevcut
+Et Dürüm      | 160 TL       | 15                     | Mevcut Değil
