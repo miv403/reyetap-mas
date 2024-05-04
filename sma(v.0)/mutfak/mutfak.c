@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
+#include <unistd.h> // Unix sistemlerinde sleep fonksiyonu için
 
 #define MAX_YEMEK_UZUNLUK 50
-#define MAX_ASCILAR 3
+#define MAX_ASCILAR 3 // 3 aşçıya sahip bir restoranı varsayalım
 
 // Yemek struct'ı tanımla
 typedef struct {
