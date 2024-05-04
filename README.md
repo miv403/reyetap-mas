@@ -3,3 +3,5 @@
 ## ne kodu
 
 hayatımın amına kodu
+
+ayıp
