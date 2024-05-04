@@ -1,32 +1,12 @@
-# restoran yemek takip projesi
+# özet
 
-## biçimlendirme
-
-string bölümlendirme [strtok()](https://www.geeksforgeeks.org/strtok-strtok_r-functions-c-examples/)
-
-`.txt` dosyaları `csv` biçimlendirmesinde olabilir:
-
-```.csv
-yAdi,yFiyat,yHSure,yDurum
-Lahmacun,7500,1200,True
-```
-
-> fiyat kuruş, süre saniye birimindedir.
-> yDurum için `<stdbool.h>` [^1]
-
-### tarih
-
-[ISO 8601:](https://en.wikipedia.org/wiki/ISO_8601) 2024-05-04T12:00:00
-
-## izlenceler
-
-üç farklı izlenceden oluşacak.
+ödev üç farklı izlenceden oluşacak.
 
 1. müşteri.exe
 2. restoran.exe
 3. mutfak.exe
 
-### müşteri.exe
+## müşteri.exe
 
 **yazılımdan beklenenler:**
 
@@ -40,7 +20,7 @@ Lahmacun,7500,1200,True
 2. mevcut sipariş durumu
 3. daha önceki siparişlerim
 
-### restoran.exe
+## restoran.exe
 
 restoran yönetiminin süreçleri takip ettiği uygulama
 
@@ -63,7 +43,7 @@ restoran yönetiminin süreçleri takip ettiği uygulama
        - en çok tüketim
 4. aşçı sayısı belirleme
 
-### mutfak.exe
+## mutfak.exe
 
 gelen siparişlerin yapım süresinin yönetimi.
 onaylanan siparişlerin için süre belirlenmesi.
@@ -72,5 +52,3 @@ göre siparişlerin hazırlanma süresinin hesaplanması.
 bir aşçı aynı anda bir tek yemek yapabilmekte bundan
 ötürü hazırlanma süresine göre aşçılar siparişi hazırlama
 kuyruğuna alınmalıdır.
-
-[^1]: [cppref boolean](https://en.cppreference.com/w/c/types/boolean)
