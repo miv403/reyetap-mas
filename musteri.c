@@ -14,7 +14,7 @@ void mevcutSiparisDurumu();
 void oncekiSiparisler();
 
 int main() {
-    // Kullanıcı arayüzü ve menü
+        // Kullanıcı arayuzu ve menu
     printf("1. Yeni Siparis\n");
     printf("2. Mevcut Siparis Durumu\n");
     printf("3. Onceki Siparislerim\n");
@@ -25,15 +25,15 @@ int main() {
 
     switch(secim) {
         case 1:
-            // Yeni sipariş fonksiyonu: Kullanıcıya menüyü gösterir, sipariş alır ve kaydeder.
+            // Yeni siparis fonksiyonu: Kullaniciya menuyu gosterir, siparis alir ve kaydeder.
             yeniSiparis();
             break;
         case 2:
-            // Mevcut sipariş durumu fonksiyonu: Aktif siparişleri gösterir.
+            // Mevcut siparis durumu fonksiyonu: Aktif siparisleri gosterir.
             mevcutSiparisDurumu();
             break;
         case 3:
-            // Önceki siparişler fonksiyonu: Tamamlanmış siparişleri gösterir.
+            // Onceki siparisler fonksiyonu: Tamamlanmis siparisleri gosterir.
             oncekiSiparisler();
             break;
         default:
@@ -43,10 +43,10 @@ int main() {
     return 0;
 }
 
-// Yeni Sipariş Fonksiyonu
+// Yeni Siparis Fonksiyonu
 void yeniSiparis() {
-    // [İşlev]: Kullanıcıya menüyü gösterir, sipariş alır ve kaydeder.
-    // Yemek listesini yukle
+        // [Islev]: Kullanıcıya menüyü gosterir, siparis alir ve kaydeder.
+        // Yemek listesini yukle
     FILE *dosya = fopen("../data/yemeklistesi.txt", "r");
     if (dosya == NULL) {
         printf("Yemek listesi dosyasi bulunamadi.\n");
@@ -89,13 +89,13 @@ void yeniSiparis() {
     }
     fclose(dosya);
 
-    // Siparis bilgilerini dosyaya yaz
+        // Siparis bilgilerini dosyaya yaz
     FILE *siparisDosyasi = fopen("../data/siparisler.txt", "a");
     if (siparisDosyasi == NULL) {
         printf("Siparisler dosyasi acilamadi.\n");
         return;
     }
-    // Siparis bilgilerini olustur
+        // Siparis bilgilerini olustur
     char *kullaniciAdi = "Kullanici1"; // kullanici adi burada simdilik sabit olarak tanimlandi ama ileride kullanici adi alinacak.
     time_t t = time(NULL);
     struct tm *now = localtime(&t);
@@ -106,11 +106,11 @@ void yeniSiparis() {
     strftime(zamanDamgasi, sizeof(zamanDamgasi), "S-%Y%m%d-%siraStr", now);
     sira++;
 
-    // Hazırlanma süresini dosyadan al
+        // Hazırlanma süresini dosyadan al
     int hazirlanmaSuresi;
     sscanf(secilenYemekBilgisi, "%*[^|]|%*[^|]|%d", &hazirlanmaSuresi); // bu kodu buradan alip daha uygun bir kisima tasimamiz daha iyi olabilir.
 
-    // Siparis bilgilerini dosyaya yaz
+        // Siparis bilgilerini dosyaya yaz
     fprintf(siparisDosyasi, "%s,%s,%s,%d,%d\n", kullaniciAdi, secilenYemekBilgisi, zamanDamgasi, hazirlanmaSuresi, 0); 
     fclose(siparisDosyasi);
 
@@ -118,16 +118,56 @@ void yeniSiparis() {
     
 }
 
-// Mevcut Sipariş Durumu Fonksiyonu
+// Mevcut Siparis Durumu Fonksiyonu
 void mevcutSiparisDurumu() {
-    // [İşlev]: Aktif siparişleri gösterir.
+        // [Islev]: Aktif siparisleri gosterir.
+        // Siparisler dosyasini ac
+    FILE *siparisDosyasi = fopen("../data/siparisler.txt", "r");
+    if (siparisDosyasi == NULL) {
+        printf("Siparisler dosyasi bulunamadi.\n");
+        return;
+    }
 
-    // Fonksiyon içeriği
+        // Aktif siparisleri ekrana yazdir
+    printf("Aktif Siparisler:\n");
+    char satir[MAX_SATIR_UZUNLUGU];
+    while (fgets(satir, MAX_SATIR_UZUNLUGU, siparisDosyasi) != NULL) {
+        char *kullaniciAdi = strtok(satir, "|");
+        char *yemekAdi = strtok(NULL, "|");
+        char *fiyat = strtok(NULL, "|");
+        char *siparisZamani = strtok(NULL, "|");
+        char *hazirlanmaSuresi = strtok(NULL, "|");
+        char *durum = strtok(NULL, "\n");
+        if (strcmp(durum, "0") == 0) {
+            printf("Kullanici: %s - Yemek: %s - Fiyat: %s TL - Siparis Zamani: %s - Hazirlanma Süresi: %s dk\n", kullaniciAdi, yemekAdi, fiyat, siparisZamani, hazirlanmaSuresi);
+        }
+    }
+    fclose(siparisDosyasi);
 }
 
 // Önceki Siparişler Fonksiyonu
 void oncekiSiparisler() {
-    // [İşlev]: Tamamlanmış siparişleri gösterir.
+        // [Islev]: Tamamlanmis siparisleri gosterir.
+        // Siparisler dosyasini ac
+    FILE *siparisDosyasi = fopen("../data/siparisler.txt", "r");
+    if (siparisDosyasi == NULL) {
+        printf("Siparisler dosyasi bulunamadi.\n");
+        return;
+    }
 
-    // Fonksiyon içeriği
+        // Onceki siparisleri ekrana yazdir
+    printf("Onceki Siparisler:\n");
+    char satir[MAX_SATIR_UZUNLUGU];
+    while (fgets(satir, MAX_SATIR_UZUNLUGU, siparisDosyasi) != NULL) {
+        char *kullaniciAdi = strtok(satir, ",");
+        char *yemekAdi = strtok(NULL, ",");
+        char *fiyat = strtok(NULL, ",");
+        char *siparisZamani = strtok(NULL, ",");
+        char *hazirlanmaSuresi = strtok(NULL, ",");
+        char *durum = strtok(NULL, "\n");
+        if (strcmp(durum, "0") != 0) {
+            printf("Kullanici: %s - Yemek: %s - Fiyat: %s TL - Siparis Zaman�: %s - Haz�rlanma S�resi: %s dk\n", kullaniciAdi, yemekAdi, fiyat, siparisZamani, hazirlanmaSuresi);
+        }
+    }
+    fclose(siparisDosyasi);
 }
