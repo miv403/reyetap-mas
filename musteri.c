@@ -5,8 +5,8 @@
 
 #define MAX_YEMEK_ADI_UZUNLUGU 100
 #define MAX_SATIR_UZUNLUGU 256
-#define YEMEK_LISTESI "../veri/yemeklistesi.txt"
-#define SIPARIS "../veri/siparisler.txt"
+#define YEMEK_LISTESI "./veri/yemeklistesi.txt"
+#define SIPARIS "./veri/siparisler.txt"
 
 // Fonksiyon prototipleri
 void yeniSiparis();
