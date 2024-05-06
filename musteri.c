@@ -5,8 +5,8 @@
 
 #define MAX_YEMEK_ADI_UZUNLUGU 100
 #define MAX_SATIR_UZUNLUGU 256
-#define YEMEK_LISTESI_DOSYASI "../data/yemeklistesi.txt"
-#define SIPARIS_DOSYASI "../data/siparisler.txt"
+#define YEMEK_LISTESI_DOSYASI "../veri/yemeklistesi.txt"
+#define SIPARIS_DOSYASI "../veri/siparisler.txt"
 
 // Fonksiyon prototipleri
 void yeniSiparis();
@@ -47,7 +47,7 @@ int main() {
 void yeniSiparis() {
         // [Islev]: Kullanıcıya menüyü gosterir, siparis alir ve kaydeder.
         // Yemek listesini yukle
-    FILE *dosya = fopen("../data/yemeklistesi.txt", "r");
+    FILE *dosya = fopen("../veri/yemeklistesi.txt", "r");
     if (dosya == NULL) {
         printf("Yemek listesi dosyasi bulunamadi.\n");
         return;
@@ -73,7 +73,7 @@ void yeniSiparis() {
     scanf("%s", secilenYemek); 
 
         // Secilen yemegin bilgilerini dosyadan bul
-    dosya = fopen("../data/yemeklistesi.txt", "r");
+    dosya = fopen("../veri/yemeklistesi.txt", "r");
     if (dosya == NULL) {
         printf("Yemek listesi dosyasi bulunamadi.\n");
         return;
@@ -90,7 +90,7 @@ void yeniSiparis() {
     fclose(dosya);
 
         // Siparis bilgilerini dosyaya yaz
-    FILE *siparisDosyasi = fopen("../data/siparisler.txt", "a");
+    FILE *siparisDosyasi = fopen("../veri/siparisler.txt", "a");
     if (siparisDosyasi == NULL) {
         printf("Siparisler dosyasi acilamadi.\n");
         return;
@@ -122,7 +122,7 @@ void yeniSiparis() {
 void mevcutSiparisDurumu() {
         // [Islev]: Aktif siparisleri gosterir.
         // Siparisler dosyasini ac
-    FILE *siparisDosyasi = fopen("../data/siparisler.txt", "r");
+    FILE *siparisDosyasi = fopen("../veri/siparisler.txt", "r");
     if (siparisDosyasi == NULL) {
         printf("Siparisler dosyasi bulunamadi.\n");
         return;
@@ -149,7 +149,7 @@ void mevcutSiparisDurumu() {
 void oncekiSiparisler() {
         // [Islev]: Tamamlanmis siparisleri gosterir.
         // Siparisler dosyasini ac
-    FILE *siparisDosyasi = fopen("../data/siparisler.txt", "r");
+    FILE *siparisDosyasi = fopen("../veri/siparisler.txt", "r");
     if (siparisDosyasi == NULL) {
         printf("Siparisler dosyasi bulunamadi.\n");
         return;
