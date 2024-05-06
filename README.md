@@ -41,9 +41,9 @@ lastChange: 2024-05-05#mvarr
 - [ ] [yemekler veri dosyası](#yemekler-veri-dosyası) düzgün belirlenmedi! ~~~~miv403
 - [ ] değişken isimleri tartışılmadı. örneğin işaretçi (*pointer*) isimlendirmeleri `pDegisken` ya da `degiskenPtr` biçiminde olabilir. ~~~~miv403
   - [ ] degisken isimleri icin benim yazmis oldugum prototipin degiskenlerini kullanabiliriz :) ~~~~mvarr
-- [ ] `Musteri.exe` icinde 99. satirda henuz degisken kullanici adlari tanimlanmadigi icin sabit bir kullanıcı belirlenmis bir sekilde ayarlandi. Uygulama ilk acildiginda kullanici girisi yapilacak sekilde hem ana menu hem de belirttigim yerdeki kodda degisiklik yapilacak. ~~~~mvarr
+- [ ] `Musteri.exe` icinde 97. satirda henuz degisken kullanici adlari tanimlanmadigi icin sabit bir kullanıcı belirlenmis bir sekilde ayarlandi. Uygulama ilk acildiginda kullanici girisi yapilacak sekilde hem ana menu hem de belirttigim yerdeki kodda degisiklik yapilacak. ~~~~mvarr
 
-  > 99- char *kullaniciAdi = "Kullanici1";
+  > 97- char *kullaniciAdi = "Kullanici1";
 
 ## 2024-05-04 tarihli kararlar
 
