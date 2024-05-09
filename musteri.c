@@ -57,8 +57,8 @@ void yeniSiparis() {
     printf("Menu:\n");
     char satir[MAX_SATIR_UZUNLUGU];
     while (fgets(satir, MAX_SATIR_UZUNLUGU, dosya) != NULL) {
-        char *yemekAdi = strtok(satir, "|"); // strtok fonksiyonu ile satırı parçalara ayırır
-        char *fiyat = strtok(NULL, "|"); // "|" karakterine göre ayırır.
+        char *yemekAdi = strtok(satir, "|"); // strtok fonksiyonu ile satırı parcalara ayırır
+        char *fiyat = strtok(NULL, "|"); // "|" karakterine gore ayirir.
         char *sure = strtok(NULL, "|"); 
         char *durum = strtok(NULL, "\n");
         if (strcmp(durum, "mevcut") == 0) {

@@ -2,3 +2,6 @@
 .vscode/
 *.out
 *.o
+*.ilk
+*.obj
+*.pdb
