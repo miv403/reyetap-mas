@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "./csv.c"
 
 #define MAX_YEMEK_ADI_UZUNLUGU 100
 #define MAX_SATIR_UZUNLUGU 256
@@ -30,26 +31,33 @@ void yeniSiparisleriGoster() {
             printf("ID: %s - Kullanici: %s - Yemek: %s - Fiyat: %s TL - Siparis Zamani: %s - Hazirlanma Suresi: %s dk\n", siparisID, kullaniciAdi, yemekAdi, fiyat, siparisZamani, hazirlanmaSuresi);
         }
     }
-    fclose(dosya);
 
 }
 
 // Yemek listesini gosteren fonksiyon
 void yemekListesiniGoster() {
     // Yemek listesi dosyasını acar, mevcut yemekleri listeler.
-    FILE *dosya = fopen(YEMEK_LISTESI, "r");
+    FILE *dosya = fopen("./veri/yemekListesi.csv", "r");
     if (dosya == NULL) {
         printf("Yemek listesi dosyasi bulunamadi.\n");
         return;
     }
-
+        puts(""); 
+    printf("%-15s%-10s%-20s%-10s","Yemek Adi", // başlik satiri
+                            "Fiyati",
+                            "Hazirlanma Suresi",
+                            "Durum");
+    puts(""); 
+    puts("-------------------------------------------------------"); // yeni satir
+    csvYazdir(dosya, 150);
+    fclose(dosya);
+    /*
     printf("Mevcut Yemekler:\n");
     char satir[MAX_SATIR_UZUNLUGU];
     while (fgets(satir, MAX_SATIR_UZUNLUGU, dosya) != NULL) {
         printf("%s", satir);
     }
-
-    fclose(dosya);
+    */
 }
 
 // Gunluk rapor alan fonksiyon
