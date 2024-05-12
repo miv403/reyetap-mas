@@ -182,7 +182,14 @@ void csvYaz(FILE *dosya,  int hucreSayisi, ... ) {
 /**********************  FONKSIYON TESTLERI  ***************************/
 /***********************************************************************/
 
+//                  TESTLERİ KULLANMADAN ÖNCE OKU!
+
 // YORUM SATIRLARINI GERI KOYMAYI UNUTMA
+// BURADAKİ TESTLER AYRI AYRI ÇALIŞMAK ÜZERE YAZILMIŞTIR.
+// BÜTÜN YORUM SATIRLARINI AYNI ANDA KALDIRMAYIN.
+
+// DOSYA YOLLARI ÖRNEK BİÇİMDEDİR: İSMİ UYUŞAN DOSYANIN TAM YOLUNU
+// DEĞİŞTİRMEDEN ÇALIŞTIRMAYIN.
 
 // int main(void) {
 
