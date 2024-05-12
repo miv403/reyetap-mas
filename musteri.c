@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include "./csv.c"
 
 #define MAX_YEMEK_ADI_UZUNLUGU 100
 #define MAX_SATIR_UZUNLUGU 256
@@ -39,7 +40,6 @@ int main() {
         default:
             printf("Gecersiz secim!\n");
     }
-
     return 0;
 }
 
@@ -47,13 +47,24 @@ int main() {
 void yeniSiparis() {
         // [Islev]: Kullanıcıya menüyü gosterir, siparis alir ve kaydeder.
         // Yemek listesini yukle
-    FILE *dosya = fopen(YEMEK_LISTESI, "r");
+    FILE *dosya;
+    dosya = fopen("./veri/yemekListesi.csv", "r");
     if (dosya == NULL) {
         printf("Yemek listesi dosyasi bulunamadi.\n");
-        return;
     }
 
         // Menuyu kullaniciya goster
+    puts(""); 
+    printf("%-15s%-10s%-20s%-10s","Yemek Adi", // başlik satiri
+                            "Fiyati",
+                            "Hazirlanma Suresi",
+                            "Durum");
+    puts(""); 
+    puts("-------------------------------------------------------"); // yeni satir
+    csvYazdir(dosya, 150);
+    fclose(dosya);
+
+/*
     printf("Menu:\n");
     char satir[MAX_SATIR_UZUNLUGU];
     while (fgets(satir, MAX_SATIR_UZUNLUGU, dosya) != NULL) {
@@ -66,7 +77,46 @@ void yeniSiparis() {
         }
     }
     fclose(dosya);
+*/
 
+    dosya = fopen("./veri/yemekListesi.csv", "r");
+    if (dosya == NULL) {
+        printf("Yemek listesi dosyasi bulunamadi.\n");
+    }
+
+    printf("Siparis vermek istediginiz yemegin numarasini giriniz: ");
+    int kullaniciSecim;
+    scanf("%d", &kullaniciSecim);
+    
+    char secilenAd[20] = "";
+    char secilenFiyat[5] = "";
+    char secilenSure[5] = "";
+    char secilenDurum[6] = "";
+    csvOkuyucu(dosya, secilenAd, 150, kullaniciSecim, 1);
+    rewind(dosya);
+    csvOkuyucu(dosya, secilenFiyat, 150, kullaniciSecim, 2);
+    rewind(dosya);
+    csvOkuyucu(dosya, secilenSure, 150, kullaniciSecim, 3);
+    rewind(dosya);
+    csvOkuyucu(dosya, secilenDurum, 150, kullaniciSecim, 4);
+
+    fclose(dosya);
+
+    if(secilenDurum[0] == 'T' || secilenDurum[0] == 't') {
+        puts("Su siparisi verdiniz: ");
+        printf("%s%s", "Yemek Adi: ", secilenAd);
+        puts("");
+        printf("%s%s", "Fiyati: ", secilenFiyat);
+        puts("");
+        printf("%s%s", "Hazirlanma Suresi: ", secilenSure);
+        puts("");
+    }else {
+        puts("Sectiginiz yemek su an mevcut degil: ");
+        printf("%s%s", "Yemek Adi: ", secilenAd);
+    }
+    puts("");
+
+/*
         // Kullanicidan siparis al
     printf("Siparis vermek istediginiz yemegin adini giriniz: ");
     char secilenYemek[MAX_YEMEK_ADI_UZUNLUGU]; 
@@ -96,7 +146,7 @@ void yeniSiparis() {
         return;
     }
         // Siparis bilgilerini olustur
-    char *kullaniciAdi = "Kullanici1"; // kullanici adi burada simdilik sabit olarak tanimlandi ama ileride kullanici adi alinacak.
+    char *kullaniciAdi = "Kullanici1"; // TODO: kullanici adi burada simdilik sabit olarak tanimlandi ama ileride kullanici adi alinacak.
     time_t t = time(NULL);
     struct tm *now = localtime(&t);
     char zamanDamgasi[15]; // zaman damgasi icin 15 karakterlik bir dizi olusturuldu. (S-YYYYMMDD-XYZ)
@@ -108,14 +158,14 @@ void yeniSiparis() {
 
         // Hazırlanma süresini dosyadan al
     int hazirlanmaSuresi;
-    sscanf(secilenYemekBilgisi, "%*[^|]|%*[^|]|%d", &hazirlanmaSuresi); // bu kodu buradan alip daha uygun bir kisima tasimamiz daha iyi olabilir.
+    sscanf(secilenYemekBilgisi, "%*[^|]|%*[^|]|%d", &hazirlanmaSuresi); // TODO: bu kodu buradan alip daha uygun bir kisima tasimamiz daha iyi olabilir.
 
         // Siparis bilgilerini dosyaya yaz
     fprintf(siparisDosyasi, "%s,%s,%s,%d,%d\n", kullaniciAdi, secilenYemekBilgisi, zamanDamgasi, hazirlanmaSuresi, 0); 
     fclose(siparisDosyasi);
 
     printf("Siparisiniz alinmistir. Hazirlanma suresi: %d dakika.\n", hazirlanmaSuresi);
-    
+*/ 
 }
 
 // Mevcut Siparis Durumu Fonksiyonu
@@ -166,7 +216,7 @@ void oncekiSiparisler() {
         char *hazirlanmaSuresi = strtok(NULL, ",");
         char *durum = strtok(NULL, "\n");
         if (strcmp(durum, "0") != 0) {
-            printf("Kullanici: %s - Yemek: %s - Fiyat: %s TL - Siparis Zaman�: %s - Haz�rlanma S�resi: %s dk\n", kullaniciAdi, yemekAdi, fiyat, siparisZamani, hazirlanmaSuresi);
+            printf("Kullanici: %s - Yemek: %s - Fiyat: %s TL - Siparis Zamani: %s - Hazirlanma Suresi: %s dk\n", kullaniciAdi, yemekAdi, fiyat, siparisZamani, hazirlanmaSuresi);
         }
     }
     fclose(siparisDosyasi);
