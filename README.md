@@ -36,27 +36,29 @@ lastChange: 2024-05-05#mvarr
 
 - [ ] kaynak kodu içinde [TODO](https://marketplace.visualstudio.com/items?itemName=Gruntfuggly.todo-tree) kullanımı. başka eklenti de olabilir. yorum sayırı içinde TODO FIXME gibi sözcükleri algılayıp ayrı bir yerde gösteriyor
 - [ ] [markdownlint](https://marketplace.visualstudio.com/items?itemName=DavidAnson.vscode-markdownlint): markdown belgeleri için eklenti. kurala uyulmadığında hata veriyo
-- [ ] `./other/odev-aciklamasi.pdf` içindeki [sorunlar](#sorunlar) ders yetkilisine sorulacak.
+- [x] `./other/odev-aciklamasi.pdf` içindeki [sorunlar](#sorunlar) ders yetkilisine sorulacak.
   - [ ] bu bölümde ödev raporu diye bir ibare de var. ~~~~miv403
 - [ ] [yemekler veri dosyası](#yemekler-veri-dosyası) düzgün belirlenmedi! ~~~~miv403
 - [ ] değişken isimleri tartışılmadı. örneğin işaretçi (*pointer*) isimlendirmeleri `pDegisken` ya da `degiskenPtr` biçiminde olabilir. ~~~~miv403
   - [ ] degisken isimleri icin benim yazmis oldugum prototipin degiskenlerini kullanabiliriz :) ~~~~mvarr
 - [ ] `Musteri.exe` icinde 97. satirda henuz degisken kullanici adlari tanimlanmadigi icin sabit bir kullanıcı belirlenmis bir sekilde ayarlandi. Uygulama ilk acildiginda kullanici girisi yapilacak sekilde hem ana menu hem de belirttigim yerdeki kodda degisiklik yapilacak. ~~~~mvarr
 
-  > 97- char *kullaniciAdi = "Kullanici1";
+  ```C
+  /*>>>97*/ char *kullaniciAdi = "Kullanici1";
+  ```
 
 ## 2024-05-04 tarihli kararlar
 
 ### sorunlar
 
-- [ ] Ödev dosyasında ödevin tek bir dosya içinde olması istenmiş ancak bizden 3 farklı `.exe` dosyası oluşturulması isteniyor. tek bir c dosyasında 3 defa ayrı ikili dosyaya derleme nasıl yapılır araştırılmalı.
+- [x] Ödev dosyasında ödevin tek bir dosya içinde olması istenmiş ancak bizden 3 farklı `.exe` dosyası oluşturulması isteniyor. tek bir c dosyasında 3 defa ayrı ikili dosyaya derleme nasıl yapılır araştırılmalı.
 
 `./other/odev-aciklamasi.pdf` dosyasından alıntı;
 > ReYeTaP projesi 3 farklı uygulamadan oluşacaktır.
 > Kodu gönderirken tüm kodları tek bir `.c` ya da `.txt` dosyasına yazarak ödev yükleme
 > arayüzüne <u>ödev raporu</u> ile birlikte yüklenmelidir.
 
-- [ ] Yine ödev dosyasında `müşteri.exe`nin yalnızca okuma yapması istenmiş ancak yeni sipariş kaydetmemiz için yazmamız gerekmekte. bu çelişkiler danışılacak.
+- [x] Yine ödev dosyasında `müşteri.exe`nin yalnızca okuma yapması istenmiş ancak yeni sipariş kaydetmemiz için yazmamız gerekmekte. bu çelişkiler danışılacak.
 
 `./other/odev-aciklamasi.pdf` dosyasından alıntı;
 > Bu uygulama dosya
