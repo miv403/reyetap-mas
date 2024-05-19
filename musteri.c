@@ -129,6 +129,8 @@ void yeniSiparis() {
     
     int hazirlanmaSuresi = atoi(secilenSure);
 
+    // atoi(): str -> int // https://en.cppreference.com/w/c/string/byte/atoi
+
     time_t t = time(NULL);
     struct tm *now = localtime(&t);
     char zamanDamgasi[15] = ""; // zaman damgasi icin 15 karakterlik bir dizi olusturuldu. (S-YYYYMMDD-XYZ)
@@ -155,18 +157,71 @@ void yeniSiparis() {
 
 }
 
-// Mevcut Siparis Durumu Fonksiyonu
 void mevcutSiparisDurumu() {
-        // [Islev]: Aktif siparisleri gosterir.
-        // Siparisler dosyasini ac
-    FILE *siparisDosyasi = fopen(SIPARIS, "r");
+    // ilgili KULLANICIYA AİT olan ETKİN siparişleri gösterecek işlev
+
+void emptyString(int strSayisi, ...); // string boşaltmak için işlev
+
+    FILE *siparisDosyasi;
+
+    siparisDosyasi = fopen("./veri/siparisler.csv", "r");
     if (siparisDosyasi == NULL) {
         printf("Siparisler dosyasi bulunamadi.\n");
         return;
     }
 
-        // Aktif siparisleri ekrana yazdir
+    printf("Kullanici adi girin: ");
+    char kullaniciAdiIN[15] = "";
+    scanf("%14s", kullaniciAdiIN);
+
+    char siparisID[15] = "";
+    char yemekAdi[20] = "";
+    char yemekFiyati[5] = "";
+    char siparisZamani[17] = "";
+    char hazirlanmaZamani[17] = "";
+    char kullaniciAdi[15] = "";
+    char asci[5] = "";
+
+    int bayrak = 1;
+    int satirNo = 1;
     printf("Aktif Siparisler:\n");
+
+    while(bayrak < 8){
+        csvHucreAl(siparisDosyasi, kullaniciAdi, 150, satirNo, 5);
+        rewind(siparisDosyasi);
+
+        if (strcmp(kullaniciAdi, kullaniciAdiIN) != 0) {
+
+            csvHucreAl(siparisDosyasi, siparisID, 150, satirNo, 0);
+            rewind(siparisDosyasi);
+            csvHucreAl(siparisDosyasi, yemekAdi, 150, satirNo, 2);
+            rewind(siparisDosyasi);
+            csvHucreAl(siparisDosyasi, yemekFiyati, 150, satirNo, 3);
+            rewind(siparisDosyasi);
+            csvHucreAl(siparisDosyasi, siparisZamani, 150, satirNo, 3);
+            rewind(siparisDosyasi);
+            csvHucreAl(siparisDosyasi, hazirlanmaZamani, 150, satirNo, 4);
+            rewind(siparisDosyasi);
+            csvHucreAl(siparisDosyasi, asci, 150, satirNo, 6);
+            rewind(siparisDosyasi);
+
+            printf("%-20s%-25s%-10s%-20s%-20s%-10s",siparisID,
+                                                    yemekAdi,
+                                                    yemekFiyati,
+                                                    siparisZamani,
+                                                    hazirlanmaZamani,
+                                                    asci);
+            puts("");
+        }
+        
+        emptyString(6, siparisID, yemekAdi, yemekFiyati, siparisZamani, hazirlanmaZamani, asci);
+        bayrak++;
+        satirNo++;
+    }
+
+    fclose(siparisDosyasi);
+/*
+        // Aktif siparisleri ekrana yazdir
     char satir[MAX_SATIR_UZUNLUGU];
     while (fgets(satir, MAX_SATIR_UZUNLUGU, siparisDosyasi) != NULL) {
         char *kullaniciAdi = strtok(satir, "|");
@@ -179,20 +234,21 @@ void mevcutSiparisDurumu() {
             printf("Kullanici: %s - Yemek: %s - Fiyat: %s TL - Siparis Zamani: %s - Hazirlanma Süresi: %s dk\n", kullaniciAdi, yemekAdi, fiyat, siparisZamani, hazirlanmaSuresi);
         }
     }
-    fclose(siparisDosyasi);
+*/
 }
 
-// Önceki Siparişler Fonksiyonu
 void oncekiSiparisler() {
-        // [Islev]: Tamamlanmis siparisleri gosterir.
-        // Siparisler dosyasini ac
-    FILE *siparisDosyasi = fopen(SIPARIS, "r");
+    // ilgili KULLANICIYA AİT olan EDİLGİN siparişleri gösterecek işlev
+
+    // Siparisler dosyasini ac
+    FILE *siparisDosyasi;
+    siparisDosyasi = fopen(SIPARIS, "r");
     if (siparisDosyasi == NULL) {
         printf("Siparisler dosyasi bulunamadi.\n");
         return;
     }
 
-        // Onceki siparisleri ekrana yazdir
+    // Onceki siparisleri ekrana yazdir
     printf("Onceki Siparisler:\n");
     char satir[MAX_SATIR_UZUNLUGU];
     while (fgets(satir, MAX_SATIR_UZUNLUGU, siparisDosyasi) != NULL) {
@@ -207,4 +263,18 @@ void oncekiSiparisler() {
         }
     }
     fclose(siparisDosyasi);
+}
+
+void emptyString(int strSayisi, ...) { // string boşaltmak için işlev
+    va_list args;
+    va_start(args, strSayisi);
+
+    for(int i = 0; i < strSayisi; ++i) {
+        char *str0 = va_arg(args, char *);
+            while(str0 != NULL) {
+                *str0 = '\0';
+                str0++;
+            }
+    }
+    va_end(args);
 }
