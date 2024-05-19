@@ -55,29 +55,24 @@ void yeniSiparis() {
 
         // Menuyu kullaniciya goster
     puts(""); 
-    printf("%-15s%-10s%-20s%-10s","Yemek Adi", // başlik satiri
+    printf("%-15s%-10s%-12s%-10s\n%31s","Yemek Adi", // başlik satiri
                             "Fiyati",
-                            "Hazirlanma Suresi",
-                            "Durum");
+                            "Hazirlanma ",
+                            "Durum",
+                            "Suresi");
     puts(""); 
     puts("-------------------------------------------------------"); // yeni satir
+
+    /* 
+    Yemek Adi      Fiyati    Hazirlanma          Durum
+                             Suresi
+    -------------------------------------------------------
+    */
+
     csvYazdir(dosya, 150);
     fclose(dosya);
 
-/*
-    printf("Menu:\n");
-    char satir[MAX_SATIR_UZUNLUGU];
-    while (fgets(satir, MAX_SATIR_UZUNLUGU, dosya) != NULL) {
-        char *yemekAdi = strtok(satir, "|"); // strtok fonksiyonu ile satırı parcalara ayırır
-        char *fiyat = strtok(NULL, "|"); // "|" karakterine gore ayirir.
-        char *sure = strtok(NULL, "|"); 
-        char *durum = strtok(NULL, "\n");
-        if (strcmp(durum, "mevcut") == 0) {
-            printf("%s - Fiyat: %s TL - Hazirlanma Suresi: %s dk\n", yemekAdi, fiyat, sure); 
-        }
-    }
-    fclose(dosya);
-*/
+    // TODO: yemek listesi yazdırırken yemeklerin numarası yazdırılmıyor
 
     dosya = fopen("./veri/yemekListesi.csv", "r");
     if (dosya == NULL) {
@@ -92,14 +87,13 @@ void yeniSiparis() {
     char secilenFiyat[5] = "";
     char secilenSure[5] = "";
     char secilenDurum[6] = "";
-    csvOkuyucu(dosya, secilenAd, 150, kullaniciSecim, 1);
+    csvHucreAl(dosya, secilenAd, 150, kullaniciSecim, 1);
     rewind(dosya);
-    csvOkuyucu(dosya, secilenFiyat, 150, kullaniciSecim, 2);
+    csvHucreAl(dosya, secilenFiyat, 150, kullaniciSecim, 2);
     rewind(dosya);
-    csvOkuyucu(dosya, secilenSure, 150, kullaniciSecim, 3);
+    csvHucreAl(dosya, secilenSure, 150, kullaniciSecim, 3);
     rewind(dosya);
-    csvOkuyucu(dosya, secilenDurum, 150, kullaniciSecim, 4);
-
+    csvHucreAl(dosya, secilenDurum, 150, kullaniciSecim, 4);
     fclose(dosya);
 
     if(secilenDurum[0] == 'T' || secilenDurum[0] == 't') {

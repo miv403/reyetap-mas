@@ -14,7 +14,7 @@
 // verilen satır ve sütun numarasını dosyadan geri döndüren fonksiyon
 
 // TODO bu tanımlanamalar ile ilgili sınır değerleri eklenebilir.
-// TODO csvOkuyucu() adı csvHucreAl ya da csvAl csvGet gibi daha 
+// TODO csvHucreAl() adı csvHucreAl ya da csvAl csvGet gibi daha 
 //      açıklayıcı bir ad ile değiştirilebilir.
 
 
@@ -25,7 +25,7 @@
 //#define CSV_YOL "./yemekListesi.csv"
 //#define SUTUN_SINIRI 4
 
-void csvOkuyucu(FILE *dosya,        // dosya işaretçisi
+void csvHucreAl(FILE *dosya,        // dosya işaretçisi
                 char *hucreOut,     // çıktı adresi
                 size_t maxSatirC,   // maks. okunacak satir karakteri sayisi
                                         // char[] için gerekli.
@@ -206,7 +206,7 @@ void csvYaz(FILE *dosya,  int hucreSayisi, ... ) {
 // int main(void) { // testlerin hepsi bu dosya derlenerek çalışmaktadır.
                     // bundan ötürü main() yorum satırı olmamalı.
 
-/************************  csvOkuyucu() TEST  **************************/
+/************************  csvHucreAl() TEST  **************************/
 /*
     FILE *dosya;
 
@@ -218,7 +218,7 @@ void csvYaz(FILE *dosya,  int hucreSayisi, ... ) {
     }
 
     char istenenDeger[30];
-    csvOkuyucu(dosya, istenenDeger, 150 , 2, 1);
+    csvHucreAl(dosya, istenenDeger, 150 , 2, 1);
 
     printf("%s\n", istenenDeger);
 
