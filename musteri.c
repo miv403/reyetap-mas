@@ -69,7 +69,7 @@ void yeniSiparis() {
     -------------------------------------------------------
     */
 
-    csvYazdir(yemekListesi, 150);
+    yemekListesiYazdir(yemekListesi, 150);
     fclose(yemekListesi);
 
     // FIXME: yemek listesi yazdırırken yemeklerin numarası yazdırılmıyor

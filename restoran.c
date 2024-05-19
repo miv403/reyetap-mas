@@ -49,7 +49,7 @@ void yemekListesiniGoster() {
                             "Durum");
     puts(""); 
     puts("-------------------------------------------------------"); // yeni satir
-    csvYazdir(dosya, 150);
+    yemekListesiYazdir(dosya, 150);
     fclose(dosya);
     /*
     printf("Mevcut Yemekler:\n");

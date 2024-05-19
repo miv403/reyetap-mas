@@ -73,7 +73,7 @@ void csvHucreAl(FILE *dosya,        // dosya işaretçisi
 //#define MAX_HUCRE 4     // TODO satirdaki maks hucre sayisi
 //#define SUTUN_SINIRI 4  // TODO EKLENMEDI: sutun sınırı koyulabilir
 
-int csvYazdir(FILE *dosya,      // okunacak dosya işaretçisi
+int yemekListesiYazdir(FILE *dosya,      // okunacak dosya işaretçisi
             size_t maxSatirC) { // okunmak istenen satir sayisi
 
 // UYARI: .csv dosyalarının içerisinde Türkçe karakter bulunmamalı      <<<<<
@@ -224,7 +224,7 @@ void csvYaz(FILE *dosya,  int hucreSayisi, ... ) {
 
 
 */
-/************************  csvYazdir() TEST  ***************************/
+/************************  yemekListesiYazdir() TEST  ***************************/
 /*
     FILE *dosya;
 
@@ -240,7 +240,7 @@ void csvYaz(FILE *dosya,  int hucreSayisi, ... ) {
                             "Durum");
     puts(""); // yeni satir
 
-    csvYazdir(dosya, 150);
+    yemekListesiYazdir(dosya, 150);
 
     fclose(dosya);
 
