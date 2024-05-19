@@ -10,7 +10,7 @@ date: 2024-05-04
   - Örnek: S-2024-05-04-001
 - `#define UZANTI ".CSV.TXT"`
 - Hocaya teslim edilmeden önce uzantısı düzeltilecek (.txt olarak)
-
+ 
 ## yemekler.txt.csv
 
 - Mevcut durumu için boolean değeri atanacak [Mevcut (True) - Mevcut Değil (False)]

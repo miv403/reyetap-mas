@@ -9,7 +9,7 @@
 #define SIPARIS "./veri/siparisler.txt"
 
 
-// Yemek struct'i tanimla
+// Yemek struct'i tanimla 
 typedef struct {
     char ad[YEMEK_UZUNLUK];
     int hazirlanmaSuresi;

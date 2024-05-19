@@ -9,7 +9,7 @@
 #define YEMEK_LISTESI "./veri/yemeklistesi.txt"
 #define SIPARIS "./veri/siparisler.txt"
 
-// Fonksiyon prototipleri
+// Fonksiyon prototipleri 
 void yeniSiparis();
 void mevcutSiparisDurumu();
 void oncekiSiparisler();

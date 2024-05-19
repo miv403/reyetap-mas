@@ -8,7 +8,7 @@
 #define YEMEK_LISTESI "./veri/yemeklistesi.txt"
 #define SIPARIS "./veri/siparisler.txt"
 
-// Yeni siparisleri gosteren fonksiyon
+// Yeni siparisleri gosteren fonksiyon 
 void yeniSiparisleriGoster() {
     // Siparisler dosyasini acar, bekleyen siparisleri listeler.
     FILE *siparisDosyasi;

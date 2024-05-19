@@ -8,7 +8,7 @@
 
 ## müşteri.exe
 
-**yazılımdan beklenenler:**
+**yazılımdan beklenenler:** 
 
 1. müşteri sipariş verebilecek
 2. siparişin durumunu takip edebilecek

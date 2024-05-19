@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-// TODO: fonksiyonlar satir ve sütün sınır degerlerine toleransli olmayabilir.
+// TODO: fonksiyonlar satir ve sütün sınır degerlerine toleransli olmayabilir. 
 
 /***********************************************************************/
 
