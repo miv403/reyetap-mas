@@ -197,7 +197,7 @@ int siparislerYazdir(FILE *dosya,   // okunacak dosya işaretçisi
                             /* code */
                             break;
                         case 2:
-                            printf("%-13s%s", hucre, "TL");
+                            printf("%-15s",hucre);
                             /* code */
                             break;
                         case 3:
@@ -210,7 +210,12 @@ int siparislerYazdir(FILE *dosya,   // okunacak dosya işaretçisi
                             printf("%-10s", hucre);
                             break;
                         case 6:
-                            printf("%-5s", hucre);
+                            printf("%-8s", " ");
+                            while(*hucre != '\n') {
+                                printf("%c", *hucre);
+                                hucre++;
+                            }
+                            puts("");
                             break;
                         default:
                             break;

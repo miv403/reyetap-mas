@@ -2,5 +2,5 @@ siparisID, yemekAdi, yemekFiyati, siparisZamani, hazirlanmaZamani, kullaniciAdi,
 S-20240519-001,Tost,60,hSure,S-20240519-,Kullanici1,A1
 S-20240519-002,Lahmacun,75,hSure,S-20240519-,Kullanici1,A1
 S-20240519-003,Lahmacun,75,hSure,20,Kullanici1,A1
-S-20240519-004,Tost,60,SIPARIS ZAMANI FIXME,10,Kullanici1,A1
-S-20240519-005,Hamburger,250,SIPARIS ZAMANI FIXME,30,Kullanici1,A1
+S-20240519-004,Tost,60,FIXME,10,Kullanici1,A1
+S-20240519-005,Hamburger,250,FIXME,30,Kullanici1,A1

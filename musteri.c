@@ -147,7 +147,7 @@ void yeniSiparis() {
             zamanDamgasi,
             secilenAd,
             secilenFiyat,
-            "SIPARIS ZAMANI FIXME", //FIXME: buraya siparis ZAMANI 
+            "FIXME", //FIXME: buraya siparis ZAMANI 
             secilenSure,            //(ve buraya) hazirlanma ZAMANI
             kullaniciAdi,                   // gelecek suresi değil
             "A1" );
