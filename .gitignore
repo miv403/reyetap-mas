@@ -5,3 +5,5 @@
 *.ilk
 *.obj
 *.pdb
+/dosyaFonksiyonlari/*
+ 

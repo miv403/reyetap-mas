@@ -8,16 +8,31 @@
 #define YEMEK_LISTESI "./veri/yemeklistesi.txt"
 #define SIPARIS "./veri/siparisler.txt"
 
-// Yeni siparisleri gosteren fonksiyon
+// Yeni siparisleri gosteren fonksiyon 
 void yeniSiparisleriGoster() {
     // Siparisler dosyasini acar, bekleyen siparisleri listeler.
-    FILE *dosya = fopen(SIPARIS, "r");
-    if (dosya == NULL) {
+    FILE *siparisDosyasi;
+    siparisDosyasi = fopen("./veri/siparisler.csv", "r");
+    if (siparisDosyasi == NULL) {
         printf("Siparisler dosyasi bulunamadi.\n");
         return;
     }
 
     printf("Yeni Siparisler:\n");
+    puts("");
+    
+    printf("%-15s%-15s%-15s%-20s%-20s%-15s%-10s",
+                "Siparis ID",
+                "Yemek Adi",
+                "Yemek Fiyati",
+                "Siparis Zamani",
+                "Hazirlanma Zamani",
+                "Kullanici Adi",
+                "Asci");
+    puts("---------------------------------------------------------------------------------------------------------");
+    siparislerYazdir(siparisDosyasi, 150);
+
+/*
     char satir[MAX_SATIR_UZUNLUGU];
     while (fgets(satir, MAX_SATIR_UZUNLUGU, dosya) != NULL) {
         char *siparisID = strtok(satir, "|");
@@ -31,7 +46,7 @@ void yeniSiparisleriGoster() {
             printf("ID: %s - Kullanici: %s - Yemek: %s - Fiyat: %s TL - Siparis Zamani: %s - Hazirlanma Suresi: %s dk\n", siparisID, kullaniciAdi, yemekAdi, fiyat, siparisZamani, hazirlanmaSuresi);
         }
     }
-
+*/
 }
 
 // Yemek listesini gosteren fonksiyon
@@ -49,7 +64,7 @@ void yemekListesiniGoster() {
                             "Durum");
     puts(""); 
     puts("-------------------------------------------------------"); // yeni satir
-    csvYazdir(dosya, 150);
+    yemekListesiYazdir(dosya, 150);
     fclose(dosya);
     /*
     printf("Mevcut Yemekler:\n");

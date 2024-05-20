@@ -7,14 +7,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-// TODO: fonksiyonlar satir ve sütün sınır degerlerine toleransli olmayabilir.
+// TODO: fonksiyonlar satir ve sütün sınır degerlerine toleransli olmayabilir. 
 
 /***********************************************************************/
 
 // verilen satır ve sütun numarasını dosyadan geri döndüren fonksiyon
 
 // TODO bu tanımlanamalar ile ilgili sınır değerleri eklenebilir.
-// TODO csvOkuyucu() adı csvHucreAl ya da csvAl csvGet gibi daha 
+// TODO csvHucreAl() adı csvHucreAl ya da csvAl csvGet gibi daha 
 //      açıklayıcı bir ad ile değiştirilebilir.
 
 
@@ -25,7 +25,7 @@
 //#define CSV_YOL "./yemekListesi.csv"
 //#define SUTUN_SINIRI 4
 
-void csvOkuyucu(FILE *dosya,        // dosya işaretçisi
+int csvHucreAl(FILE *dosya,        // dosya işaretçisi
                 char *hucreOut,     // çıktı adresi
                 size_t maxSatirC,   // maks. okunacak satir karakteri sayisi
                                         // char[] için gerekli.
@@ -44,6 +44,9 @@ void csvOkuyucu(FILE *dosya,        // dosya işaretçisi
         fgets(satir, maxSatirC, dosya);
         // dosyanın satirNo satirina kadar satir alınıyor
         // son alınan satır istenen satır oluyor.
+        if (satir == NULL){
+            return 0;
+        }
     }
 
     hucre = strtok(satir, ",");
@@ -59,6 +62,8 @@ void csvOkuyucu(FILE *dosya,        // dosya işaretçisi
         ++hucre;
         ++hucreOut;
     }
+
+    return 1;
 }
 
 /***********************************************************************/
@@ -73,15 +78,12 @@ void csvOkuyucu(FILE *dosya,        // dosya işaretçisi
 //#define MAX_HUCRE 4     // TODO satirdaki maks hucre sayisi
 //#define SUTUN_SINIRI 4  // TODO EKLENMEDI: sutun sınırı koyulabilir
 
-int csvYazdir(FILE *dosya,      // okunacak dosya işaretçisi
+int yemekListesiYazdir(FILE *dosya,      // okunacak dosya işaretçisi
             size_t maxSatirC) { // okunmak istenen satir sayisi
 
 // UYARI: .csv dosyalarının içerisinde Türkçe karakter bulunmamalı      <<<<<
 // Türkçe karakterler fazladan karakter yeri kaplayarak çıktıda kaymalara
 // neden oluyorlar.
-
-// FIXME fonksiyon sadece yemekListesi.csv'yi düzgün yazdırabiliyor.
-// TODO fonksiyon her .csv dosyasını yazdırabilecek hale getirilmeli.
 
     char satir[maxSatirC];
     char *hucre;
@@ -160,6 +162,76 @@ int csvYazdir(FILE *dosya,      // okunacak dosya işaretçisi
 
 /***********************************************************************/
 
+// siparisler.csv içeriğini yazacak fonksiyon
+
+int siparislerYazdir(FILE *dosya,   // okunacak dosya işaretçisi
+            size_t maxSatirC) {     // okunmak istenen satir sayisi
+
+// UYARI: .csv dosyalarının içerisinde Türkçe karakter bulunmamalı      <<<<<
+// Türkçe karakterler fazladan karakter yeri kaplayarak çıktıda kaymalara
+// neden oluyorlar.
+
+    char satir[maxSatirC];
+    char *hucre;
+    int sutunNo = 0;
+    int satirNo = 0;
+
+    while( fgets(satir, maxSatirC, dosya) != NULL) {
+    // dosyadan tek bir satır alınıyor
+
+    // satır hücrelere bölünüyor
+        hucre = strtok(satir, ",");
+        sutunNo = 0;
+        while(hucre != NULL) {
+            switch (satirNo) {
+                case  0:
+                    break;
+                default:
+                    switch (sutunNo) {  
+
+                        case 0:
+                            printf("%-15s", hucre);
+                            break;
+                        case 1:
+                            printf("%-15s", hucre);
+                            /* code */
+                            break;
+                        case 2:
+                            printf("%-15s",hucre);
+                            /* code */
+                            break;
+                        case 3:
+                            printf("%-20s", hucre);
+                            break;
+                        case 4:
+                            printf("%-20s", hucre);
+                            break;
+                        case 5:
+                            printf("%-10s", hucre);
+                            break;
+                        case 6:
+                            printf("%-8s", " ");
+                            while(*hucre != '\n') {
+                                printf("%c", *hucre);
+                                hucre++;
+                            }
+                            puts("");
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+            }
+            hucre = strtok(NULL, ",");
+            sutunNo++;
+        }
+        ++satirNo;
+    }
+    
+}
+
+/***********************************************************************/
+
 // .csv dosyasına verileri yazacak program
 
 // değişken sayida argüman almak için:
@@ -206,7 +278,7 @@ void csvYaz(FILE *dosya,  int hucreSayisi, ... ) {
 // int main(void) { // testlerin hepsi bu dosya derlenerek çalışmaktadır.
                     // bundan ötürü main() yorum satırı olmamalı.
 
-/************************  csvOkuyucu() TEST  **************************/
+/************************  csvHucreAl() TEST  **************************/
 /*
     FILE *dosya;
 
@@ -218,13 +290,13 @@ void csvYaz(FILE *dosya,  int hucreSayisi, ... ) {
     }
 
     char istenenDeger[30];
-    csvOkuyucu(dosya, istenenDeger, 150 , 2, 1);
+    csvHucreAl(dosya, istenenDeger, 150 , 2, 1);
 
     printf("%s\n", istenenDeger);
 
 
 */
-/************************  csvYazdir() TEST  ***************************/
+/************************  yemekListesiYazdir() TEST  ***************************/
 /*
     FILE *dosya;
 
@@ -240,7 +312,7 @@ void csvYaz(FILE *dosya,  int hucreSayisi, ... ) {
                             "Durum");
     puts(""); // yeni satir
 
-    csvYazdir(dosya, 150);
+    yemekListesiYazdir(dosya, 150);
 
     fclose(dosya);
 
