@@ -8,7 +8,8 @@
 #define ASCILAR_MAX 3
 #define AD_MAX 50
 #define YEMEK_MAX 3
-#define YEMEK_LISTESI "./veri/yemekListesi.csv" //TODO dosya konumunu değiştirmeyi unutma
+#define YEMEK_LISTESI "./veri/yemekListesi.csv" 
+        //TODO dosya konumunu değiştirmeyi unutma
 #define SIPARIS_LISTESI "./asciAlgoritmasi/siparisler.csv"
 #define SATIR_MAX 256
 
@@ -25,12 +26,15 @@ typedef struct {
     int siparisNo;              // 
     char ad[AD_MAX];
     char onay[5];
+    Asci * atananAsci;
 } Siparis;
 
 typedef struct {
+    int asciID;
     int siparisNo;              // siparisler.csv siparis konumu.
     struct tm * uygunZamani;    // &siparisler[i].hazirlanmaZamani
-    Siparis * atananSiparis;    // Siparis pointer
+//    Siparis * atananSiparis;    // Siparis pointer
+
 }Asci;
 
 typedef struct {
@@ -38,7 +42,7 @@ typedef struct {
     int hazirlanmaSuresi;
 } Yemek;
 
-struct tm sifir = { .tm_year = 100,
+struct tm sifir = { .tm_year = 10,
                     .tm_mon = 0,
                     .tm_mday = 1,
                     .tm_hour = 0,
@@ -50,7 +54,7 @@ void yemekListesiOku(FILE * dosya, Yemek yemekler[]);
 void stringToTM (const char * stringIN, struct tm * zaman);
 bool zamanKarsilastir(const struct tm *zaman1, const struct tm *zaman2);
 size_t siparislerOku(FILE * dosya, Siparis siparisler[], size_t siparisMax);
-
+void zamanEkle(const struct tm * zaman1, int eklenecekDakika, struct tm * zamanOut);
 size_t enUygunAsci(Asci ascilar[], size_t ascilarMax);
 
 int main(void) {
@@ -84,6 +88,9 @@ int main(void) {
 
     /******** SIPARISLERI OKU *******/
 
+    // TODO: siparisleriOku() işlevine asci hücresini okuma eklenmeli
+    // bu sayede siparisin onaylanma durumu ve ayrıca atanmış aşçı önceden belirlenebilir.
+
     FILE *siparislerDosyasi;
     siparislerDosyasi = fopen(SIPARIS_LISTESI, "r");
     if (siparislerDosyasi == NULL) {
@@ -101,11 +108,23 @@ int main(void) {
     }
     /*********************************/
 
+    /* YEMEK LİSTESİ <--> SİPARİŞLER  */
 
+    // TODO: yemek listesindeki adlar ile siparişlerdeki adlar eşleştirilip
+    // hazirlanma süreleri siparişlere atanacak.
 
     /*********** ASCI ATAMA **********/
+    
+    // başlangıçta tüm aşçılar sırayla ilk ASCILAR_MAX tane siparişe atanması   
+    // için tüm uygunZamani işaretçileri sıfır nesnesine işaret ettiriliyor.
+    // ve aşçıID leri atanıyor
 
-    // sadece A0 siparişleri alınacak
+    for(size_t i = 0; i < ASCILAR_MAX; ++i) {
+        ascilar[i].uygunZamani = &sifir;
+        ascilar[i].asciID = i + 1;
+    }
+
+    // TODO sadece A0 siparişleri alınacak
 
     /*
     uygunluk zamanı en uygun olan aşçılar numaralarına göre sırayla
@@ -126,17 +145,56 @@ int main(void) {
     >   müsait olma zamanina hazirlanma süresi eklenerek güncellenmeli.
 
     */
+
     // EN UYGUN AŞÇIYI BULMA
+    for(size_t i = 0; i < siparisSayisi; ++i) {
+        int asciID = enUygunAsci(ascilar, ASCILAR_MAX);
 
-//    enUygunAsci(ascilar, ASCILAR_MAX);
+        // en uygun aşçı alınır ve ID numarası alınır
 
-    // ZAMAN KARŞILAŞTIRMA
-
+        // ZAMAN KARŞILAŞTIRMA
     // zamanKarsilastir(ascilar[i].uygunZamani, &siparisler[j].siparisZamani);
+        if(zamanKarsilastir(ascilar[asciID].uygunZamani,
+                            &siparisler[i].siparisZamani)) {
+            // zaman1 >= zaman2 TRUE
+            // ZAMAN EKLEME (HAZIRLANMA SURESI)
+            // zamanEkle()
 
-    // ZAMAN EKLEME (HAZIRLANMA SURESI)
+            //siparis[i] hazirlanma zamani = asci[j] uygun zamani + hazirlanma suresi
 
-    // DOSYAYA EKLEME
+
+            // ascinin uygun olma zamanına hazırlanmaSuresi ekleniyor
+            // ve siparişin hazirlanmaZamani üyesine atanıyor
+            zamanEkle(ascilar[asciID].uygunZamani, // &siparisler[X].hazirlanmaZamani
+                        siparisler[i].hazirlanmaSuresi,
+                        &siparisler[i].hazirlanmaZamani);
+
+            ascilar[asciID].uygunZamani = &siparisler[i].hazirlanmaZamani;
+            siparisler[i].atananAsci = &ascilar[asciID];
+
+        }else {
+            // zaman1 < zaman2 FALSE
+
+            // sipariş[i] hazirlanma zamani = sipariş[i] zamani + hazirlanma suresi
+            // aşçı uygun zamani = & sipariş[i] hazirlanma zamanio
+            // asci[j] atananSiparis = &siparis[i]
+            // siparis[i] atananAsci = &asci[j]
+
+            zamanEkle(&siparisler[i].siparisZamani,
+                        siparisler[i].hazirlanmaSuresi,
+                        &siparisler[i].hazirlanmaZamani);
+            ascilar[asciID].uygunZamani = &siparisler[i].hazirlanmaZamani;
+            siparisler[i].atananAsci = &ascilar[asciID];
+        }
+        
+        // TODO: DOSYAYA İŞLEME
+
+        // siparis[i]'ye atanan asci ile ilgili bilgiler çekilebilir
+        // TODO: siparis struct'ı genişlet ve siparisler.csv'deki tüm verileri 
+        // kaydet. onaylanmayan siparişler haricindeki tüm siparişleri "w"
+        // ile dosyaya tekrar yazdır.
+
+    }
 
     /*********************************/
 
@@ -153,6 +211,32 @@ int main(void) {
     puts(output);
     strftime(output, 17, "%Y-%m-%dT%H.%M", ascilar[0].uygunZamani);
     puts(output);
+}
+
+void zamanEkle(const struct tm * zaman1,    // aşçının uygun olma zamani
+                int eklenecekDakika,        // eklenecek dakika
+                struct tm * zamanOut) {     // atanacak sipariş zamani pointer
+
+    if (zaman1 == NULL) {
+        puts("Hata: Geçersiz tm işaretçisi.");
+        return;
+    }
+
+    time_t unixSaniye = mktime((struct tm*) zaman1);
+
+    if (unixSaniye == -1) {
+        puts("Hata: mktime() dönüşümü başarısız oldu.");
+        return;
+    }
+
+    // Add minutes
+    unixSaniye += eklenecekDakika * 60;
+
+    // Convert back to struct tm
+    if (localtime_r(&unixSaniye, zamanOut) == NULL) {
+        puts("Hata: localtime_r() dönüşümü başarısız oldu.");
+        return;
+    }
 }
 
 size_t siparislerOku(FILE * dosya, Siparis siparisler[], size_t siparisMax){
@@ -249,6 +333,8 @@ void stringToTM (const char * stringIN, struct tm  * zaman) {
         zaman->tm_hour = atoi(bolut);
         bolut = strtok(NULL, ".");
         zaman->tm_min = atoi(bolut);
+
+        zaman->tm_sec = 0;
     }
 }
 
