@@ -57,7 +57,7 @@ int csvHucreAl(FILE *dosya,        // dosya işaretçisi
     }
 
     // hücrenin değeri verilen char * 'a yazdırılıyor.
-    while(*hucre != '\0'){
+    while(*hucre != '\0'){ //FIXME: strcpy()
         *hucreOut = *hucre;
         ++hucre;
         ++hucreOut;

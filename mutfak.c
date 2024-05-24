@@ -79,7 +79,7 @@ void siparisleriIsle(Yemek yemekler[], Asci ascilar[]) {
 
                 if (i == ASCILAR) {
                     printf("Tum ascilar mesgul. Siparisler birazdan hazirlanacak...\n");
-                    sleep(5); // Kısa bir süre bekle ve tekrar dene
+                    // sleep(5); // Kısa bir süre bekle ve tekrar dene
                 }
             }
         }
@@ -95,7 +95,7 @@ void siparisleriIsle(Yemek yemekler[], Asci ascilar[]) {
         }
 
         fclose(dosya);
-        sleep(60); // Her dakika kontrol et
+        // sleep(60); // Her dakika kontrol et
     }
 }
 
