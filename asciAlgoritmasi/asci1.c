@@ -10,6 +10,11 @@
 #define YEMEK_MAX 3
 #define YEMEK_LISTESI "./veri/yemekListesi.csv" //TODO dosya konumunu değiştirmeyi unutma
 #define SIPARIS_LISTESI "./asciAlgoritmasi/siparisler.csv"
+#define SATIR_MAX 256
+
+
+
+char output[17]; // FIXME: hata ayıklama için göndermeden önce sil
 
 typedef struct {
     // const char *siparisZamani; // 2024-05-23T10.00
@@ -44,6 +49,8 @@ struct tm sifir = { .tm_year = 100,
 void yemekListesiOku(FILE * dosya, Yemek yemekler[]);
 void stringToTM (const char * stringIN, struct tm * zaman);
 bool zamanKarsilastir(const struct tm *zaman1, const struct tm *zaman2);
+size_t siparislerOku(FILE * dosya, Siparis siparisler[], size_t siparisMax);
+
 size_t enUygunAsci(Asci ascilar[], size_t ascilarMax);
 
 int main(void) {
@@ -83,30 +90,15 @@ int main(void) {
         puts("Siparisler dosyasi bulunamadi!");
         return -1;
     }
-    
-    char satir[256];
-    size_t i = 0;
-    fgets(satir, 256, siparislerDosyasi);
-    while(fgets(satir, 256, siparislerDosyasi) != NULL && i < SIPARIS_MAX) {
-        
-        char siparisZamani[17];
-        sscanf(satir,
-        "%*[^,] , %[^,] , %*[^,] , %[^,] , %*[^,] , %*[^,] , %*[^,]", 
-            siparisler[i].ad,
-            siparisZamani);
-        stringToTM(siparisZamani, &siparisler[i].siparisZamani);
-        i++;
-    }
-    size_t siparisSayisi = i;
 
-    char output[17];
+    size_t siparisSayisi = siparislerOku(siparislerDosyasi, siparisler, SIPARIS_MAX);
 
+    /*  hata ayiklama  */
     for(size_t i = 0; i < siparisSayisi; ++i) {
         printf("%s\n", siparisler[i].ad);
         strftime(output,17, "%Y-%m-%dT%H.%M", &siparisler[i].siparisZamani);
         puts(output);
     }
-
     /*********************************/
 
 
@@ -150,15 +142,39 @@ int main(void) {
 
 
     // ascilar[0].uygunZamani = &siparisler[0].siparisZamani;  
-    char zamanGirdisi000[] = "2024-05-23T10.31";
+    
+    // asci yapısındaki ilgili pointer'ı sınayan ifadeler
+    char zamanGirdisi000[] = "2024-05-23T10.61";
     stringToTM(zamanGirdisi000,&siparisler[0].siparisZamani);
 
     ascilar[0].uygunZamani = &siparisler[0].siparisZamani;
 
     strftime(output,17, "%Y-%m-%dT%H.%M", &siparisler[0].siparisZamani);
     puts(output);
-    strftime(output,17, "%Y-%m-%dT%H.%M", ascilar[0].uygunZamani);
+    strftime(output, 17, "%Y-%m-%dT%H.%M", ascilar[0].uygunZamani);
     puts(output);
+}
+
+size_t siparislerOku(FILE * dosya, Siparis siparisler[], size_t siparisMax){
+
+    char satir[SATIR_MAX];
+
+    size_t i = 0;
+    fgets(satir, 256, dosya);
+    while(fgets(satir, 256, dosya) != NULL && i < siparisMax) {
+        
+        char siparisZamani[17];
+        sscanf(satir,
+        "%*[^,] , %[^,] , %*[^,] , %[^,] , %*[^,] , %*[^,] , %*[^,]", 
+            siparisler[i].ad,
+            siparisZamani);
+        stringToTM(siparisZamani, &siparisler[i].siparisZamani);
+        i++;
+    }
+    size_t siparisSayisi = i; // okunan sipariş sayısı 
+
+    return siparisSayisi; 
+
 }
 
 size_t enUygunAsci(Asci ascilar[], size_t ascilarMax) { 
@@ -182,12 +198,13 @@ bool zamanKarsilastir(const struct tm *zaman1, const struct tm *zaman2) {
     
     time_t hamZaman1 = mktime((struct tm*)zaman1); 
     
-    // Note the cast, mktime modifies its argument
+    // mktime() zaman1'i değiştirdiğinden ötürü
+    // cast işleci kullanılıyor.
 
     time_t hamZaman2 = mktime((struct tm*)zaman2);
 
-    if (hamZaman1 >= hamZaman2) return true;  // Equal or later
-    if (hamZaman1 < hamZaman2) return false; // zaman1 is earlier
+    if (hamZaman1 >= hamZaman2) return true;  // eşit ya da sonra
+    if (hamZaman1 < hamZaman2) return false; // zaman1 daha erken
 }
 
 void yemekListesiOku(FILE * dosya, Yemek yemekler[]) {
