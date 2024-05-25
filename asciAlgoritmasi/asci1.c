@@ -27,6 +27,7 @@ typedef struct {
     char ad[AD_MAX];
     char onay[5];
     Asci * atananAsci;
+
 } Siparis;
 
 typedef struct {
@@ -50,7 +51,7 @@ struct tm sifir = { .tm_year = 10,
                     .tm_sec = 0 };
 
 
-void yemekListesiOku(FILE * dosya, Yemek yemekler[]);
+size_t yemekListesiOku(FILE * dosya, Yemek yemekler[]);
 void stringToTM (const char * stringIN, struct tm * zaman);
 bool zamanKarsilastir(const struct tm *zaman1, const struct tm *zaman2);
 size_t siparislerOku(FILE * dosya, Siparis siparisler[], size_t siparisMax);
@@ -75,7 +76,9 @@ int main(void) {
         return -1;
     }
 
-    yemekListesiOku(yemekListesi, yemekler);
+    size_t yemekSayisi = yemekListesiOku(yemekListesi, yemekler);
+
+    fclose(yemekListesi);
 
     for(int i = 0; i < YEMEK_MAX; ++i){
 
@@ -100,7 +103,10 @@ int main(void) {
 
     size_t siparisSayisi = siparislerOku(siparislerDosyasi, siparisler, SIPARIS_MAX);
 
+    fclose(siparislerDosyasi);
+
     /*  hata ayiklama  */
+
     for(size_t i = 0; i < siparisSayisi; ++i) {
         printf("%s\n", siparisler[i].ad);
         strftime(output,17, "%Y-%m-%dT%H.%M", &siparisler[i].siparisZamani);
@@ -110,8 +116,20 @@ int main(void) {
 
     /* YEMEK LİSTESİ <--> SİPARİŞLER  */
 
-    // TODO: yemek listesindeki adlar ile siparişlerdeki adlar eşleştirilip
+    // yemek listesindeki adlar ile siparişlerdeki adlar eşleştirilip
     // hazirlanma süreleri siparişlere atanacak.
+
+    for(size_t i = 0; i < siparisSayisi; ++i) {
+
+        for(size_t j = 0; j < yemekSayisi; ++j) {
+
+            if(strcmp(siparisler[i].ad, yemekler[j].ad )){
+                // yemek adi ile siparişteki yemek adi eşleştirilip
+                // hazirlanmaSuresi verisi sipariş nesnesine kopyalanıyor
+                siparisler[i].hazirlanmaSuresi =  yemekler[j].hazirlanmaSuresi;
+            }
+        }
+    }
 
     /*********** ASCI ATAMA **********/
     
@@ -217,6 +235,8 @@ void zamanEkle(const struct tm * zaman1,    // aşçının uygun olma zamani
                 int eklenecekDakika,        // eklenecek dakika
                 struct tm * zamanOut) {     // atanacak sipariş zamani pointer
 
+    // TODO: hata ifadelerini düzenle!
+
     if (zaman1 == NULL) {
         puts("Hata: Geçersiz tm işaretçisi.");
         return;
@@ -229,7 +249,7 @@ void zamanEkle(const struct tm * zaman1,    // aşçının uygun olma zamani
         return;
     }
 
-    // Add minutes
+    // verilen dakika süresini saniye olarak ekleme
     unixSaniye += eklenecekDakika * 60;
 
     // Convert back to struct tm
@@ -240,6 +260,10 @@ void zamanEkle(const struct tm * zaman1,    // aşçının uygun olma zamani
 }
 
 size_t siparislerOku(FILE * dosya, Siparis siparisler[], size_t siparisMax){
+
+    // siparişler dosyasının ikinci dorduncu sütununu okur ve Siparis nesnesine işler. Sipariş sayisini geri döndürür.
+
+    // TODO: siparişler ile ilgili tüm verileri oku ve hepsini Siparis nesnesine ekle.
 
     char satir[SATIR_MAX];
 
@@ -291,10 +315,9 @@ bool zamanKarsilastir(const struct tm *zaman1, const struct tm *zaman2) {
     if (hamZaman1 < hamZaman2) return false; // zaman1 daha erken
 }
 
-void yemekListesiOku(FILE * dosya, Yemek yemekler[]) {
+size_t yemekListesiOku(FILE * dosya, Yemek yemekler[]) {
 
     // yemek listesi dosyasından birinci(ad) ve üçüncü(hazirlanmaSuresi) sütunu okur.
-
     char satir[256];
     int yemekSayisi = 0;
 
@@ -305,15 +328,21 @@ void yemekListesiOku(FILE * dosya, Yemek yemekler[]) {
         // , karakterine göre satırdan gerekli sütunları okuma
 
         sscanf(satir, "%[^,] , %*[^,] , %d , %*[^,]", yemekler[i].ad, &yemekler[i].hazirlanmaSuresi);
+
+        yemekSayisi++;
     }
+
+    return yemekSayisi;
 
 }
 
 void stringToTM (const char * stringIN, struct tm  * zaman) {
 
-    char stringINCPY[17];
+    // bir string değişkeni tm nesnesine dönüştüren işlev.
+
+    char stringINCPY[17]; // verilen string'in kopyası
     strcpy(stringINCPY, stringIN);
-    char *bolut;
+    char *bolut; // strtok() ile alınan bölütler
     
     bolut = strtok(stringINCPY, "T");
     if (bolut != NULL) {
@@ -334,7 +363,7 @@ void stringToTM (const char * stringIN, struct tm  * zaman) {
         bolut = strtok(NULL, ".");
         zaman->tm_min = atoi(bolut);
 
-        zaman->tm_sec = 0;
+        zaman->tm_sec = 0; // bu tek başına girilmezse garbage value oluyor SİLME!!!
     }
 }
 
