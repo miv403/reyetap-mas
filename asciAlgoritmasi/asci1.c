@@ -447,7 +447,3 @@ void stringToTM (const char * stringIN, struct tm  * zaman) {
         zaman->tm_sec = 0; // bu tek başına girilmezse garbage value oluyor SİLME!!!
     }
 }
-
-
-
-
