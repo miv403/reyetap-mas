@@ -6,17 +6,18 @@
 
 #include "./csv.c"
 
-// FIXME BU PROGRAM DA HATALAR VAR SU AN KAFAM BASMIYO HANGISI HATALI DIYE ~~~MIV403
-
 #define MAX_YEMEK_ADI_UZUNLUGU 100
-#define MAX_SATIR_UZUNLUGU 256
+#define MAX_SATIR_UZUNLUGU 1024
 #define YEMEK_LISTESI "./veri/yemekListesi.csv"
 #define SIPARIS "./veri/siparisler.csv"
+#define AD_MAX 50
+#define SIPARIS_MAX 50
+// FIXME BU PROGRAM DA HATALAR VAR SU AN KAFAM BASMIYO HANGISI HATALI DIYE ~~~MIV403
 
-// Fonksiyon prototipleri 
 void yeniSiparis();
 void mevcutSiparisDurumu();
 void oncekiSiparisler();
+int siparislerOku(FILE * dosya,  size_t siparisMax);
 
 int main() {
         // Kullanıcı arayuzu ve menu
@@ -59,7 +60,8 @@ void yeniSiparis() {
 
         // Menuyu kullaniciya goster
     puts(""); 
-    printf("%-15s%-10s%-12s%-10s\n%31s","Yemek Adi", // başlik satiri
+    printf("%-15s%-10s%-12s%-10s\n%31s", // TODO: no satiri eklenmeli ayrica kayma olusuyor
+                            "Yemek Adi", // başlik satiri
                             "Fiyati",
                             "Hazirlanma ",
                             "Durum",
@@ -91,8 +93,8 @@ void yeniSiparis() {
     char secilenAd[20] = "";
     char secilenFiyat[5] = "";
     char secilenSure[5] = "";
-    char secilenDurum[6] = "";
-
+    char secilenDurum[10] = "";
+    // TODO: struct kullan ve yemekListesiOku() (mutfak.c)
     csvHucreAl(yemekListesi, secilenAd, 150, kullaniciSecim, 1);
     rewind(yemekListesi);
     csvHucreAl(yemekListesi, secilenFiyat, 150, kullaniciSecim, 2);
@@ -118,15 +120,19 @@ void yeniSiparis() {
 
         // Siparis bilgilerini dosyaya yaz
 
-    FILE *siparisDosyasi = fopen("./veri/siparisler.csv", "a");
-    
-    siparisDosyasi = fopen("./veri/siparisler.csv", "a");
+    FILE *siparisDosyasi;
+    siparisDosyasi = fopen("./veri/siparisler.csv", "r");
 
     if(siparisDosyasi == NULL) {
         printf("Siparisler dosyasi acilamadi.\n");
         return;
     }
 
+    int siparisSayisi = siparislerOku(siparisDosyasi, SIPARIS_MAX);
+
+    fclose(siparisDosyasi);
+
+    siparisDosyasi = fopen("./veri/siparisler.csv", "a");
         // Siparis bilgilerini olustur
     
     char *kullaniciAdi = "Kullanici1"; // TODO: kullanici adi burada simdilik sabit olarak tanimlandi ama ileride kullanici adi alinacak.
@@ -137,32 +143,31 @@ void yeniSiparis() {
 
     time_t t = time(NULL);
     struct tm *now = localtime(&t);
-    char zamanDamgasi[15] = ""; // zaman damgasi icin 15 karakterlik bir dizi olusturuldu. (S-YYYYMMDD-XYZ)
-    static int sira = 1; // FIXME: bu değişken gereksiz kullanıcı sipariş verdikten sonra program kapanacak ve değişken silinecek.
-    char siraStr[4];
-    sprintf(siraStr, "%03d", sira);
-    strftime(zamanDamgasi, sizeof(zamanDamgasi), "S-%Y%m%d-%siraStr", now);
-    sira++;
+    char zamanDamgasi[17] = "";
+    char siparisZamani[17] = "";
+    
+    strftime(siparisZamani, 17, "%Y-%m-%dT%H.%M", now);
+    
+    // FIXME: sıra numarası
 
-
+    strftime(zamanDamgasi,17, "S-%Y%m%d", now);
+    char siparisID[AD_MAX];
+    sprintf(siparisID, "%s-%d",zamanDamgasi, siparisSayisi);
     // Siparis bilgilerini dosyaya yaz
     
-    csvYaz(siparisDosyasi, 7,
-            zamanDamgasi,
-            secilenAd,
-            secilenFiyat,
-            "FIXME", //FIXME: buraya siparis ZAMANI 
-            secilenSure,            //(ve buraya) hazirlanma ZAMANI
-            kullaniciAdi,                   // gelecek suresi değil
-            "A1" );
-    fclose(siparisDosyasi);
-
-    printf("Siparisiniz alinmistir. Hazirlanma suresi: %d dakika.\n", hazirlanmaSuresi);
-
+    if(secilenDurum[0] == 'T' || secilenDurum[0] == 't') {
+        csvYaz(siparisDosyasi, 7,
+                siparisID,
+                secilenAd,
+                secilenFiyat,
+                siparisZamani,
+                "0", 
+                kullaniciAdi,
+                "A0" );
+        fclose(siparisDosyasi);
+        printf("Siparisiniz alinmistir. Hazirlanma suresi: %d dakika.\n", hazirlanmaSuresi);
+    }
 }
-
-// FIXME: HAZİRLANMA ZAMANİ EKRANA BASTIRILMIYOR
-// HAZİRLANMA ZAMANININ KALDIRILMASINDAN ÖTÜRÜ HATALI
 
 void mevcutSiparisDurumu() {
     FILE *siparisDosyasi = fopen(SIPARIS, "r");
@@ -192,15 +197,14 @@ void mevcutSiparisDurumu() {
         return;
     }
 
-    printf("\n%-15s%-15s%-10s%-20s%-15s%-10s\n",
-    // printf("\n%-15s%-15s%-10s%-20s%-20s%-15s%-10s\n",
-           "Siparis ID",
-           "Yemek Adi",
-           "Fiyat (TL)",
-           "Siparis Zamani",
-           // "Hazirlanma Zamani",
-           "Kullanici Adi",
-           "Asci");
+    printf("\n%-15s%-15s%-10s%-20s%-20s%-15s%-10s\n",
+            "Siparis ID",
+            "Yemek Adi",
+            "Fiyat (TL)",
+            "Siparis Zamani",
+            "Hazirlanma Zamani",
+            "Kullanici Adi",
+            "Asci");
     printf("-----------------------------------------------------------------------------------------\n");
 
     char satir[MAX_SATIR_UZUNLUGU];
@@ -216,27 +220,29 @@ void mevcutSiparisDurumu() {
         char *yemekAdi = strtok(NULL, ",");
         char *fiyat = strtok(NULL, ",");
         char *siparisZamani = strtok(NULL, ",");
-        // char *hazirlanmaZamani = strtok(NULL, ",");
+        char *hazirlanmaZamani = strtok(NULL, ",");
         char *kullaniciAdi = strtok(NULL, ",");
         char *asci = strtok(NULL, "\n");
 
-        if (!zamanDamgasi || !yemekAdi || !fiyat || !siparisZamani || !kullaniciAdi || !asci) {
-        // if (!zamanDamgasi || !yemekAdi || !fiyat || !siparisZamani || !hazirlanmaZamani || !kullaniciAdi || !asci) {
+        if(!(strcmp(hazirlanmaZamani,"0"))) {
+            strcpy(hazirlanmaZamani, "Hazirlaniyor");
+        }
+
+        if (!zamanDamgasi || !yemekAdi || !fiyat || !siparisZamani || !hazirlanmaZamani || !kullaniciAdi || !asci) {
             fprintf(stderr, "Siparis dosyasi satiri tam okunamadi veya eksik veri: %s\n", satir);
             continue; // siradaki satira atlar
         }
 
         if (strcmp(kullaniciAdi, kullaniciAdiIN) == 0) {
             siparisBulundu = 1;
-            printf("%-15s%-15s%-10s%-20s%-20s%-15s\n",
-            //printf("%-15s%-15s%-10s%-20s%-20s%-15s%-10s\n",
-                   zamanDamgasi,
-                   yemekAdi,
-                   fiyat,
-                   siparisZamani,
-                  // hazirlanmaZamani,
-                   kullaniciAdi,
-                   asci);
+            printf("%-15s%-15s%-10s%-20s%-20s%-15s%-10s\n",
+                    zamanDamgasi,
+                    yemekAdi,
+                    fiyat,
+                    siparisZamani,
+                    hazirlanmaZamani,
+                    kullaniciAdi,
+                    asci);
         }
     }
 
@@ -266,13 +272,13 @@ void oncekiSiparisler() {
 
     printf("\n%-15s%-15s%-10s%-20s%-15s%-10s\n",
     // printf("\n%-15s%-15s%-10s%-20s%-20s%-15s%-10s\n",
-           "Siparis ID",
-           "Yemek Adi",
-           "Fiyat (TL)",
-           "Siparis Zamani",
-           // "Hazirlanma Zamani",
-           "Kullanici Adi",
-           "Asci");
+            "Siparis ID",
+            "Yemek Adi",
+            "Fiyat (TL)",
+            "Siparis Zamani",
+            // "Hazirlanma Zamani",
+            "Kullanici Adi",
+            "Asci");
     printf("-----------------------------------------------------------------------------------------\n");
 
     char satir[MAX_SATIR_UZUNLUGU];
@@ -302,13 +308,13 @@ void oncekiSiparisler() {
             siparisBulundu = 1;
             printf("%-15s%-15s%-10s TL %-20s%-15s%-10s\n",
             //printf("%-15s%-15s%-10s TL %-20s%-20s%-15s%-10s\n",
-                   zamanDamgasi,
-                   yemekAdi,
-                   fiyat,
-                   siparisZamani,
-                   // hazirlanmaZamani,
-                   kullaniciAdi,
-                   asci);
+                    zamanDamgasi,
+                    yemekAdi,
+                    fiyat,
+                    siparisZamani,
+                    // hazirlanmaZamani,
+                    kullaniciAdi,
+                    asci);
         }
     }
 
@@ -317,4 +323,20 @@ void oncekiSiparisler() {
     }
 
     fclose(siparisDosyasi);
+}
+
+int siparislerOku(FILE * dosya,  size_t siparisMax){
+
+    // okunan sipariş sayisini geri döndürüyor
+
+    char satir[MAX_SATIR_UZUNLUGU];
+
+    int i = 1;
+    fgets(satir, 256, dosya);
+    while(fgets(satir, 256, dosya) != NULL && i < siparisMax) {
+        i++;
+    }
+    int siparisSayisi = i; // okunan sipariş sayısı 
+
+    return siparisSayisi; 
 }
