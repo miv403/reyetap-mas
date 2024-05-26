@@ -3,7 +3,7 @@
 #include <string.h>
 #include <time.h>
 #include <errno.h>
-
+#include <stdbool.h>
 #include "./csv.c"
 
 #define MAX_YEMEK_ADI_UZUNLUGU 100
@@ -18,6 +18,8 @@ void yeniSiparis();
 void mevcutSiparisDurumu();
 void oncekiSiparisler();
 int siparislerOku(FILE * dosya,  size_t siparisMax);
+bool zamanKarsilastir(const struct tm *zaman1, const struct tm *zaman2);
+void stringToTM (const char * stringIN, struct tm  * zaman);
 
 int main() {
         // Kullanıcı arayuzu ve menu
@@ -166,7 +168,7 @@ void yeniSiparis() {
                 siparisZamani,
                 "0", 
                 kullaniciAdi,
-                "A0" );
+                "XX" );
         fclose(siparisDosyasi);
         printf("Siparisiniz alinmistir. Hazirlanma suresi: %d dakika.\n", hazirlanmaSuresi);
     }
@@ -210,6 +212,7 @@ void mevcutSiparisDurumu() {
             "Asci");
     printf("-----------------------------------------------------------------------------------------\n");
 
+
     char satir[MAX_SATIR_UZUNLUGU];
     int siparisBulundu = 0;
     while (fgets(satir, MAX_SATIR_UZUNLUGU, siparisDosyasi) != NULL) {
@@ -236,7 +239,11 @@ void mevcutSiparisDurumu() {
             continue; // siradaki satira atlar
         }
 
-        if (strcmp(kullaniciAdi, kullaniciAdiIN) == 0) {
+        // struct tm hazirlanmaZamaniTM;
+
+        // stringToTM(hazirlanmaZamani, &hazirlanmaZamaniTM);
+
+        if (asci[0] == 'A' && strcmp(kullaniciAdi, kullaniciAdiIN) == 0) {
             siparisBulundu = 1;
             printf("%-15s%-15s%-10s%-20s%-20s%-15s%-10s\n",
                     zamanDamgasi,
@@ -273,19 +280,26 @@ void oncekiSiparisler() {
         }
     }
 
-    printf("\n%-15s%-15s%-10s%-20s%-15s%-10s\n",
-    // printf("\n%-15s%-15s%-10s%-20s%-20s%-15s%-10s\n",
+    char kullaniciAdiIN[20] = "";
+    printf("Kullanici adi girin: ");
+    scanf("%19s", kullaniciAdiIN);
+
+    printf("\n%-15s%-15s%-10s%-20s%-20s%-15s%-10s\n",
             "Siparis ID",
             "Yemek Adi",
             "Fiyat (TL)",
             "Siparis Zamani",
-            // "Hazirlanma Zamani",
+            "Hazirlanma Zamani",
             "Kullanici Adi",
             "Asci");
     printf("-----------------------------------------------------------------------------------------\n");
 
+    time_t t = time(NULL);
+    struct tm *now = localtime(&t);
+
     char satir[MAX_SATIR_UZUNLUGU];
     int siparisBulundu = 0;
+    fgets(satir, MAX_SATIR_UZUNLUGU, siparisDosyasi);
     while (fgets(satir, MAX_SATIR_UZUNLUGU, siparisDosyasi) != NULL) {
         // Check if the line read is complete
         if (strchr(satir, '\n') == NULL) {
@@ -297,25 +311,29 @@ void oncekiSiparisler() {
         char *yemekAdi = strtok(NULL, ",");
         char *fiyat = strtok(NULL, ",");
         char *siparisZamani = strtok(NULL, ",");
-        // char *hazirlanmaZamani = strtok(NULL, ",");
+        char *hazirlanmaZamani = strtok(NULL, ",");
         char *kullaniciAdi = strtok(NULL, ",");
         char *asci = strtok(NULL, "\n");
 
-        if (!zamanDamgasi || !yemekAdi || !fiyat || !siparisZamani || !kullaniciAdi || !asci) {
-        // if (!zamanDamgasi || !yemekAdi || !fiyat || !siparisZamani || !hazirlanmaZamani || !kullaniciAdi || !asci) {
+        if (!zamanDamgasi || !yemekAdi || !fiyat || !siparisZamani || !hazirlanmaZamani || !kullaniciAdi || !asci) {
             fprintf(stderr, "Siparis dosyasi satiri tam okunamadi veya eksik veri: %s\n", satir);
             continue; // Skip to the next line
         }
 
-        if (strcmp(asci, "0") != 0) {
+        // TODO: hazirlanmaZamani geçmiş zamanda mı karşılaştırılmalı
+
+        struct tm hazirlanmaZamaniTM;
+
+        stringToTM(hazirlanmaZamani, &hazirlanmaZamaniTM);
+
+        if (strcmp(asci, "XX") != 0 && strcmp(kullaniciAdiIN, kullaniciAdi) == 0 && !(zamanKarsilastir(&hazirlanmaZamaniTM, now))) {
             siparisBulundu = 1;
-            printf("%-15s%-15s%-10s TL %-20s%-15s%-10s\n",
-            //printf("%-15s%-15s%-10s TL %-20s%-20s%-15s%-10s\n",
+            printf("%-15s%-15s%-10s%-20s%-20s%-15s%-10s\n",
                     zamanDamgasi,
                     yemekAdi,
                     fiyat,
                     siparisZamani,
-                    // hazirlanmaZamani,
+                    hazirlanmaZamani,
                     kullaniciAdi,
                     asci);
         }
@@ -342,4 +360,50 @@ int siparislerOku(FILE * dosya,  size_t siparisMax){
     int siparisSayisi = i; // okunan sipariş sayısı 
 
     return siparisSayisi; 
+}
+
+bool zamanKarsilastir(const struct tm *zaman1, const struct tm *zaman2) {
+    // zaman1 >= zaman2 TRUE
+    // zaman1 < zaman2 FALSE
+    
+    time_t hamZaman1 = mktime((struct tm*)zaman1); 
+    
+    // mktime() zaman1'i değiştirdiğinden ötürü
+    // cast işleci kullanılıyor.
+
+    time_t hamZaman2 = mktime((struct tm*)zaman2);
+
+    if (hamZaman1 >= hamZaman2) return true;  // eşit ya da sonra
+    if (hamZaman1 < hamZaman2) return false; // zaman1 daha erken
+}
+
+void stringToTM (const char * stringIN, struct tm  * zaman) {
+
+    // bir string değişkeni tm nesnesine dönüştüren işlev.
+
+    char stringINCPY[17]; // verilen string'in kopyası
+    strcpy(stringINCPY, stringIN);
+    char *bolut; // strtok() ile alınan bölütler
+    
+    bolut = strtok(stringINCPY, "T");
+    if (bolut != NULL) {
+        bolut = strtok(bolut, "-");
+        zaman->tm_year = atoi(bolut) - 1900;
+        bolut = strtok(NULL, "-");
+        zaman->tm_mon = atoi(bolut) - 1;
+        bolut = strtok(NULL, "-");
+        zaman->tm_mday = atoi(bolut);
+
+        strcpy(stringINCPY, stringIN);
+
+        bolut = strtok(stringINCPY, "T");
+        bolut = strtok(NULL, "T");
+
+        bolut = strtok(bolut, ".");
+        zaman->tm_hour = atoi(bolut);
+        bolut = strtok(NULL, ".");
+        zaman->tm_min = atoi(bolut);
+
+        zaman->tm_sec = 0; // bu tek başına girilmezse garbage value oluyor SİLME!!!
+    }
 }
