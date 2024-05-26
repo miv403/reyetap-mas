@@ -277,10 +277,11 @@ int main(void) {
                     hazirlanmaZamani,
                     siparisler[i].kullaniciAdi,
                     asci0);
-
         }
 
+
         fclose(siparislerYeni);
+        rename("./veri/siparisler001.csv", "./veri/siparisler.csv");
     /*********************************/
 
 
@@ -344,7 +345,7 @@ size_t siparislerOku(FILE * dosya, Siparis siparisler[], size_t siparisMax){
         //TODO: daha önce bir asci alınmış mı denetlenebilir.
 
         sscanf(satir,
-        "%[^,] , %[^,] , %[^,] , %[^,] , , %[^,] , %*[^,]", 
+        "%[^,] , %[^,] , %[^,] , %[^,] , %*[^,] , %[^,] , %*[^,]", 
             siparisler[i].siparisID,
             siparisler[i].ad,
             siparisler[i].yemekFiyati,
