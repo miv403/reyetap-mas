@@ -3,13 +3,16 @@
 #include <string.h>
 #include <time.h>
 #include <stdbool.h>
+#include "../csv.c"
+// FIXME: dosya yolunu gerekirse düzelt
 
-#define SIPARIS_MAX 5
+#define SIPARIS_MAX 10
 #define ASCILAR_MAX 3
+    // FIXME: ascilar restoran.c ile alınacak
 #define AD_MAX 50
-#define YEMEK_MAX 3
+#define YEMEK_MAX 50
 #define YEMEK_LISTESI "./veri/yemekListesi.csv" 
-        //TODO dosya konumunu değiştirmeyi unutma
+        //FIXME: dosya konumunu değiştirmeyi unutma
 #define SIPARIS_LISTESI "./asciAlgoritmasi/siparisler.csv"
 #define SATIR_MAX 256
 
@@ -18,25 +21,27 @@
 char output[17]; // FIXME: hata ayıklama için göndermeden önce sil
 
 typedef struct {
-    // const char *siparisZamani; // 2024-05-23T10.00
-    // const char *hazirlanmaSuresi; // X dakika
-    struct tm siparisZamani;    // 2024-05-23T10.00
-    struct tm hazirlanmaZamani; // 2024-05-23T10.30
-    int hazirlanmaSuresi;       // 30 dakika
-    int siparisNo;              // 
-    char ad[AD_MAX];
-    char onay[5];
-    Asci * atananAsci;
-
-} Siparis;
-
-typedef struct {
     int asciID;
     int siparisNo;              // siparisler.csv siparis konumu.
     struct tm * uygunZamani;    // &siparisler[i].hazirlanmaZamani
 //    Siparis * atananSiparis;    // Siparis pointer
 
 }Asci;
+
+typedef struct {
+    char siparisID[AD_MAX];
+    char ad[AD_MAX];
+    char yemekFiyati[5];
+    struct tm siparisZamani;    // 2024-05-23T10.00
+    char kullaniciAdi[AD_MAX];
+    struct tm hazirlanmaZamani; // 2024-05-23T10.30
+    int hazirlanmaSuresi;       // 30 dakika
+    int siparisNo;              // 
+    char onay[5];
+    Asci * atananAsci;
+
+} Siparis;
+
 
 typedef struct {
     char ad[AD_MAX];
@@ -103,6 +108,8 @@ int main(void) {
 
     size_t siparisSayisi = siparislerOku(siparislerDosyasi, siparisler, SIPARIS_MAX);
 
+    printf("siparisSayisi: %zu\n", siparisSayisi);
+
     fclose(siparislerDosyasi);
 
     /*  hata ayiklama  */
@@ -123,7 +130,7 @@ int main(void) {
 
         for(size_t j = 0; j < yemekSayisi; ++j) {
 
-            if(strcmp(siparisler[i].ad, yemekler[j].ad )){
+            if(!(strcmp(siparisler[i].ad, yemekler[j].ad))){
                 // yemek adi ile siparişteki yemek adi eşleştirilip
                 // hazirlanmaSuresi verisi sipariş nesnesine kopyalanıyor
                 siparisler[i].hazirlanmaSuresi =  yemekler[j].hazirlanmaSuresi;
@@ -168,6 +175,7 @@ int main(void) {
     for(size_t i = 0; i < siparisSayisi; ++i) {
         int asciID = enUygunAsci(ascilar, ASCILAR_MAX);
 
+        //siparisler[i].atananAsci atanmış mı denetle
         // en uygun aşçı alınır ve ID numarası alınır
 
         // ZAMAN KARŞILAŞTIRMA
@@ -203,8 +211,36 @@ int main(void) {
                         &siparisler[i].hazirlanmaZamani);
             ascilar[asciID].uygunZamani = &siparisler[i].hazirlanmaZamani;
             siparisler[i].atananAsci = &ascilar[asciID];
+
         }
         
+        puts("asci algo:");
+
+            strftime(output, 17, "%Y-%m-%dT%H.%M", &siparisler[i].siparisZamani);
+            printf("siparisler[%zu].siparisZamani: %s", i, output);
+            puts("");
+
+            strftime(output, 17, "%Y-%m-%dT%H.%M", &siparisler[i].hazirlanmaZamani);
+            printf("siparisler[%zu].hazirlanmaZamani: %s", i, output);
+            puts("");
+
+            printf("siparisler[%zu].hazirlanmaSuresi: %d", i,
+                    siparisler[i].hazirlanmaSuresi);
+            puts("");
+            
+            printf("siparisler[%zu].atananAsci->asciID: %d", i,
+                    siparisler[i].atananAsci->asciID);
+            puts("");
+
+            printf("ascilar[%d].asciID:  %d", asciID, ascilar[asciID].asciID);
+            puts("");
+            
+            strftime(output, 17, "%Y-%m-%dT%H.%M", ascilar[asciID].uygunZamani);
+            printf("ascilar[%d]->uygunZamani: %s", asciID , output);
+            puts("");
+        
+
+    }
         // TODO: DOSYAYA İŞLEME
 
         // siparis[i]'ye atanan asci ile ilgili bilgiler çekilebilir
@@ -212,8 +248,43 @@ int main(void) {
         // kaydet. onaylanmayan siparişler haricindeki tüm siparişleri "w"
         // ile dosyaya tekrar yazdır.
 
-    }
+        FILE * siparislerYeni;
+        siparislerYeni = fopen("./veri/siparisler001.csv", "w");
 
+        if(siparislerYeni == NULL) {
+            puts("siparislerYeni dosyasi olusuturlamadi.");
+            return -1;
+        }
+
+        fputs("siparisID, yemekAdi, yemekFiyati, siparisZamani, hazirlanmaZamani, kullaniciAdi, asci\n", siparislerYeni);
+
+        for(size_t i = 0; i < siparisSayisi; ++i) {
+
+            
+            // TODO: test et
+
+            char siparisZamani[17];
+            char hazirlanmaZamani[17];
+            char asci0[5];
+            sprintf(asci0, "A%d", siparisler[i].atananAsci->asciID);
+            strftime(siparisZamani,17, "%Y-%m-%dT%H.%M",
+                        &siparisler[i].siparisZamani);
+            
+            strftime(hazirlanmaZamani,17, "%Y-%m-%dT%H.%M",
+                        &siparisler[i].hazirlanmaZamani);
+
+            csvYaz(siparislerYeni, 7,
+                    siparisler[i].siparisID,
+                    siparisler[i].ad,
+                    siparisler[i].yemekFiyati,
+                    siparisZamani,
+                    hazirlanmaZamani,
+                    siparisler[i].kullaniciAdi,
+                    asci0);
+
+        }
+
+        fclose(siparislerYeni);
     /*********************************/
 
 
@@ -263,7 +334,7 @@ size_t siparislerOku(FILE * dosya, Siparis siparisler[], size_t siparisMax){
 
     // siparişler dosyasının ikinci dorduncu sütununu okur ve Siparis nesnesine işler. Sipariş sayisini geri döndürür.
 
-    // TODO: siparişler ile ilgili tüm verileri oku ve hepsini Siparis nesnesine ekle.
+    // siparişler ile ilgili tüm verileri oku ve hepsini Siparis nesnesine ekle.
 
     char satir[SATIR_MAX];
 
@@ -271,18 +342,28 @@ size_t siparislerOku(FILE * dosya, Siparis siparisler[], size_t siparisMax){
     fgets(satir, 256, dosya);
     while(fgets(satir, 256, dosya) != NULL && i < siparisMax) {
         
-        char siparisZamani[17];
+        char siparisZamani[17]; // siparisZamani tm ögesine dönüştürülmeden
+                                // önce char[] olarak alınıyor
+
+        //TODO: daha önce bir asci alınmış mı denetlenebilir.
+
         sscanf(satir,
-        "%*[^,] , %[^,] , %*[^,] , %[^,] , %*[^,] , %*[^,] , %*[^,]", 
+        "%[^,] , %[^,] , %[^,] , %[^,] , , %[^,] , %*[^,]", 
+            siparisler[i].siparisID,
             siparisler[i].ad,
-            siparisZamani);
+            siparisler[i].yemekFiyati,
+            siparisZamani,
+            // burada hazirlanmaZamani bilerek atlanmıştır.
+            // (bu program zaten onu atayacak!!!)
+            siparisler[i].kullaniciAdi); // asci sütunu şimdilik boş bırakıldı (bkz ust satir todo)
+            
         stringToTM(siparisZamani, &siparisler[i].siparisZamani);
+        
         i++;
     }
     size_t siparisSayisi = i; // okunan sipariş sayısı 
 
     return siparisSayisi; 
-
 }
 
 size_t enUygunAsci(Asci ascilar[], size_t ascilarMax) { 
