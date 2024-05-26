@@ -85,6 +85,10 @@ void yeniSiparis() {
         printf("Yemek listesi dosyasi bulunamadi.\n");
         return;
     }
+    char kullaniciAdi[20] = "Kullanici1";
+    printf("Kullanici Adi giriniz: ");
+    scanf("%19s", kullaniciAdi);
+    // TODO: kullanici adi burada simdilik sabit olarak tanimlandi ama ileride kullanici adi alinacak.
 
     printf("Siparis vermek istediginiz yemegin numarasini giriniz: ");
     int kullaniciSecim;
@@ -135,7 +139,6 @@ void yeniSiparis() {
     siparisDosyasi = fopen("./veri/siparisler.csv", "a");
         // Siparis bilgilerini olustur
     
-    char *kullaniciAdi = "Kullanici1"; // TODO: kullanici adi burada simdilik sabit olarak tanimlandi ama ileride kullanici adi alinacak.
     
     int hazirlanmaSuresi = atoi(secilenSure);
 
