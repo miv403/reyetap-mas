@@ -2,12 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <errno.h>
+
 #include "./csv.c"
 
 #define MAX_YEMEK_ADI_UZUNLUGU 100
 #define MAX_SATIR_UZUNLUGU 256
-#define YEMEK_LISTESI "./veri/yemeklistesi.txt"
-#define SIPARIS "./veri/siparisler.txt"
+#define YEMEK_LISTESI "./veri/yemekListesi.csv"
+#define SIPARIS "./veri/siparisler.csv"
 
 // Fonksiyon prototipleri 
 void yeniSiparis();
@@ -157,63 +159,160 @@ void yeniSiparis() {
 
 }
 
+// FIXME: HAZİRLANMA ZAMANİ EKRANA BASTIRILMIYOR
+// HAZİRLANMA ZAMANININ KALDIRILMASINDAN ÖTÜRÜ HATALI
+
 void mevcutSiparisDurumu() {
-    // ilgili KULLANICIYA AİT olan ETKİN siparişleri gösterecek işlev
-
-    FILE *siparisDosyasi;
-
-    siparisDosyasi = fopen("./veri/siparisler.csv", "r");
+    FILE *siparisDosyasi = fopen(SIPARIS, "r");
     if (siparisDosyasi == NULL) {
-        printf("Siparisler dosyasi bulunamadi.\n");
-        return;
+        if (errno == ENOENT) { // dosya bulunamazsa
+            printf("Siparisler dosyasi bulunamadi, yeni bir dosya olusturuluyor...\n");
+            siparisDosyasi = fopen(SIPARIS, "w");
+            if (siparisDosyasi == NULL) {
+                perror("Yeni siparisler dosyasi olusturulamadi");
+                return;
+            }
+            fprintf(siparisDosyasi, "SiparisID,YemekAdi,YemekFiyati,SiparisZamani,HazirlanmaZamani,KullaniciAdi,Asci\n");
+            fclose(siparisDosyasi);
+            printf("Yeni siparisler dosyasi olusturuldu: %s\n", SIPARIS);
+            return;
+        } else {
+            perror("Siparisler dosyasi acilamadi");
+            return;
+        }
     }
 
     printf("Kullanici adi girin: ");
-    char kullaniciAdiIN[15] = "";
-    scanf("%14s", kullaniciAdiIN);
-
-    fclose(siparisDosyasi);
-/*
-        // Aktif siparisleri ekrana yazdir
-    char satir[MAX_SATIR_UZUNLUGU];
-    while (fgets(satir, MAX_SATIR_UZUNLUGU, siparisDosyasi) != NULL) {
-        char *kullaniciAdi = strtok(satir, "|");
-        char *yemekAdi = strtok(NULL, "|");
-        char *fiyat = strtok(NULL, "|");
-        char *siparisZamani = strtok(NULL, "|");
-        char *hazirlanmaSuresi = strtok(NULL, "|");
-        char *durum = strtok(NULL, "\n");
-        if (strcmp(durum, "0") == 0) {
-            printf("Kullanici: %s - Yemek: %s - Fiyat: %s TL - Siparis Zamani: %s - Hazirlanma Süresi: %s dk\n", kullaniciAdi, yemekAdi, fiyat, siparisZamani, hazirlanmaSuresi);
-        }
-    }
-*/
-}
-
-void oncekiSiparisler() {
-    // ilgili KULLANICIYA AİT olan EDİLGİN siparişleri gösterecek işlev
-
-    // Siparisler dosyasini ac
-    FILE *siparisDosyasi;
-    siparisDosyasi = fopen(SIPARIS, "r");
-    if (siparisDosyasi == NULL) {
-        printf("Siparisler dosyasi bulunamadi.\n");
+    char kullaniciAdiIN[15];
+    if (scanf("%14s", kullaniciAdiIN) != 1) {
+        fprintf(stderr, "Kullanici adi alinamadi.\n");
+        fclose(siparisDosyasi);
         return;
     }
 
-    // Onceki siparisleri ekrana yazdir
-    printf("Onceki Siparisler:\n");
+    printf("\n%-15s%-15s%-10s%-20s%-15s%-10s\n",
+    // printf("\n%-15s%-15s%-10s%-20s%-20s%-15s%-10s\n",
+           "Siparis ID",
+           "Yemek Adi",
+           "Fiyat (TL)",
+           "Siparis Zamani",
+           // "Hazirlanma Zamani",
+           "Kullanici Adi",
+           "Asci");
+    printf("-----------------------------------------------------------------------------------------\n");
+
     char satir[MAX_SATIR_UZUNLUGU];
+    int siparisBulundu = 0;
     while (fgets(satir, MAX_SATIR_UZUNLUGU, siparisDosyasi) != NULL) {
-        char *kullaniciAdi = strtok(satir, ",");
+        // satir okumasi tamamlanma kontrolu yapar
+        if (strchr(satir, '\n') == NULL) {
+            fprintf(stderr, "Satir tam okunamadi veya cok uzun: %s\n", satir);
+            continue; // siradaki satira atlar
+        }
+
+        char *zamanDamgasi = strtok(satir, ",");
         char *yemekAdi = strtok(NULL, ",");
         char *fiyat = strtok(NULL, ",");
         char *siparisZamani = strtok(NULL, ",");
-        char *hazirlanmaSuresi = strtok(NULL, ",");
-        char *durum = strtok(NULL, "\n");
-        if (strcmp(durum, "0") != 0) {
-            printf("Kullanici: %s - Yemek: %s - Fiyat: %s TL - Siparis Zamani: %s - Hazirlanma Suresi: %s dk\n", kullaniciAdi, yemekAdi, fiyat, siparisZamani, hazirlanmaSuresi);
+        // char *hazirlanmaZamani = strtok(NULL, ",");
+        char *kullaniciAdi = strtok(NULL, ",");
+        char *asci = strtok(NULL, "\n");
+
+        if (!zamanDamgasi || !yemekAdi || !fiyat || !siparisZamani || !kullaniciAdi || !asci) {
+        // if (!zamanDamgasi || !yemekAdi || !fiyat || !siparisZamani || !hazirlanmaZamani || !kullaniciAdi || !asci) {
+            fprintf(stderr, "Siparis dosyasi satiri tam okunamadi veya eksik veri: %s\n", satir);
+            continue; // siradaki satira atlar
+        }
+
+        if (strcmp(kullaniciAdi, kullaniciAdiIN) == 0) {
+            siparisBulundu = 1;
+            printf("%-15s%-15s%-10s%-20s%-20s%-15s\n",
+            //printf("%-15s%-15s%-10s%-20s%-20s%-15s%-10s\n",
+                   zamanDamgasi,
+                   yemekAdi,
+                   fiyat,
+                   siparisZamani,
+                  // hazirlanmaZamani,
+                   kullaniciAdi,
+                   asci);
         }
     }
+
+    if (!siparisBulundu) {
+        printf("Bu kullanici adina ait siparis bulunamadi.\n");
+    }
+
+    fclose(siparisDosyasi);
+}
+
+
+// FIXME: HAZİRLANMA ZAMANİ EKRANA BASTIRILMIYOR
+// HAZİRLANMA ZAMANININ KALDIRILMASINDAN ÖTÜRÜ HATALI
+// FIXME: başka hatalar olabilir
+
+void oncekiSiparisler() {
+    FILE *siparisDosyasi = fopen(SIPARIS, "r");
+    if (siparisDosyasi == NULL) {
+        if (errno == ENOENT) { // File not found
+            printf("Siparisler dosyasi bulunamadi.\n");
+            return;
+        } else {
+            perror("Siparisler dosyasi acilamadi");
+            return;
+        }
+    }
+
+    printf("\n%-15s%-15s%-10s%-20s%-15s%-10s\n",
+    // printf("\n%-15s%-15s%-10s%-20s%-20s%-15s%-10s\n",
+           "Siparis ID",
+           "Yemek Adi",
+           "Fiyat (TL)",
+           "Siparis Zamani",
+           // "Hazirlanma Zamani",
+           "Kullanici Adi",
+           "Asci");
+    printf("-----------------------------------------------------------------------------------------\n");
+
+    char satir[MAX_SATIR_UZUNLUGU];
+    int siparisBulundu = 0;
+    while (fgets(satir, MAX_SATIR_UZUNLUGU, siparisDosyasi) != NULL) {
+        // Check if the line read is complete
+        if (strchr(satir, '\n') == NULL) {
+            fprintf(stderr, "Satir tam okunamadi veya cok uzun: %s\n", satir);
+            continue; // Skip to the next line
+        }
+
+        char *zamanDamgasi = strtok(satir, ",");
+        char *yemekAdi = strtok(NULL, ",");
+        char *fiyat = strtok(NULL, ",");
+        char *siparisZamani = strtok(NULL, ",");
+        // char *hazirlanmaZamani = strtok(NULL, ",");
+        char *kullaniciAdi = strtok(NULL, ",");
+        char *asci = strtok(NULL, "\n");
+
+        if (!zamanDamgasi || !yemekAdi || !fiyat || !siparisZamani || !kullaniciAdi || !asci) {
+        // if (!zamanDamgasi || !yemekAdi || !fiyat || !siparisZamani || !hazirlanmaZamani || !kullaniciAdi || !asci) {
+            fprintf(stderr, "Siparis dosyasi satiri tam okunamadi veya eksik veri: %s\n", satir);
+            continue; // Skip to the next line
+        }
+
+        if (strcmp(asci, "0") != 0) {
+            siparisBulundu = 1;
+            printf("%-15s%-15s%-10s TL %-20s%-15s%-10s\n",
+            //printf("%-15s%-15s%-10s TL %-20s%-20s%-15s%-10s\n",
+                   zamanDamgasi,
+                   yemekAdi,
+                   fiyat,
+                   siparisZamani,
+                   // hazirlanmaZamani,
+                   kullaniciAdi,
+                   asci);
+        }
+    }
+
+    if (!siparisBulundu) {
+        printf("Tamamlanmis siparis bulunamadi.\n");
+    }
+
     fclose(siparisDosyasi);
 }
