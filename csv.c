@@ -57,11 +57,8 @@ int csvHucreAl(FILE *dosya,        // dosya işaretçisi
     }
 
     // hücrenin değeri verilen char * 'a yazdırılıyor.
-    while(*hucre != '\0'){ //FIXME: strcpy()
-        *hucreOut = *hucre;
-        ++hucre;
-        ++hucreOut;
-    }
+    
+    strcpy(hucreOut,hucre);
 
     return 1;
 }
@@ -263,6 +260,48 @@ void csvYaz(FILE *dosya,  int hucreSayisi, ... ) {
     va_end(args);
 }
 
+/***********************************************************************/
+/***********************************************************************/
+
+void deleteFromFile(const char* fileName, const char* dataToDelete) {
+    FILE* file = fopen(fileName, "r");
+    FILE* tempFile = fopen("temp.txt", "w");
+    if (file == NULL || tempFile == NULL) {
+        perror("File not open");
+        if (file != NULL) fclose(file);
+        if (tempFile != NULL) fclose(tempFile);
+        return;
+    }
+
+    char buffer[256];
+    int found = 0;
+    while (fgets(buffer, sizeof(buffer), file) != NULL) {
+        // Remove the newline character from the buffer
+        buffer[strcspn(buffer, "\n")] = 0;
+
+        if (strcmp(buffer, dataToDelete) != 0) {
+            fprintf(tempFile, "%s\n", buffer);
+        }
+        else {
+            found = 1;
+        }
+    }
+
+    fclose(file);
+    fclose(tempFile);
+
+    if (found) {
+        remove(fileName);
+        rename("temp.txt", fileName);
+        printf("Data delete was successful.\n");
+    }
+    else {
+        remove("temp.txt");
+        printf("Data not found.\n");
+    }
+}
+
+
 /**********************  FONKSIYON TESTLERI  ***************************/
 /***********************************************************************/
 
@@ -338,5 +377,38 @@ void csvYaz(FILE *dosya,  int hucreSayisi, ... ) {
     return 0;
 */
 /***********************************************************************/
+/*
+    int choice;
+    char fileName[] = "yemekListesi.csv";
+    char data[256], oldData[256], newData[256];
+
+    printf("1. Append to file\n");
+    printf("2. Update file\n");
+    printf("3. Delete from file\n");
+    printf("Enter your choice: ");
+    scanf("%d", &choice);
+
+    switch (choice) {
+    case 1:
+        printf("Enter data to append (format: Item,Price,Quantity,Available): ");
+        scanf(" %[^\n]", data);  // Read entire line including spaces
+        appendToFile(fileName, data);
+        break;
+    case 2:
+        printf("Enter the exact data to be updated: ");
+        scanf(" %[^\n]", oldData);  // Read entire line including spaces
+        printf("Enter the new data: ");
+        scanf(" %[^\n]", newData);  // Read entire line including spaces
+        updateFile(fileName, oldData, newData);
+        break;
+    case 3:
+        printf("Enter the exact data to delete: ");
+        scanf(" %[^\n]", data);  // Read entire line including spaces
+        deleteFromFile(fileName, data);
+        break;
+    default:
+        printf("Invalid choice.\n");
+    }
+*/
 
 // }
