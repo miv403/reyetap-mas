@@ -6,13 +6,13 @@
 #include "./csv.c"
 
 #define SIPARIS_MAX 10
-#define ASCILAR_MAX 3
     // FIXME: ascilar restoran.c ile alınacak
 #define AD_MAX 50
 #define YEMEK_MAX 50
 #define YEMEK_LISTESI "./veri/yemekListesi.csv" 
 #define SIPARIS_LISTESI "./veri/siparisler.csv"
 #define SATIR_MAX 256
+#define ASCI_DOSYASI "./veri/ascilar.txt"
 
 char output[17]; // FIXME: hata ayıklama için göndermeden önce sil
 
@@ -61,8 +61,22 @@ size_t enUygunAsci(Asci ascilar[], size_t ascilarMax);
 
 int main(void) {
 
+    // ASCI SAYISINI OKUMA
+    
+    FILE *asciDosyasi;
+    asciDosyasi = fopen(ASCI_DOSYASI, "r");
+    char asciSayisiSTR[10];
+    fgets(asciSayisiSTR, 9, asciDosyasi);
+    int ASCILAR_MAX = atoi(asciSayisiSTR);
+
+    if(ASCILAR_MAX <= 0) {
+        ASCILAR_MAX = 3;
+    }
+    printf("%d asciniz var.", ASCILAR_MAX);
+    puts("");
+
     Siparis siparisler[SIPARIS_MAX];
-    Asci ascilar[3];
+    Asci ascilar[ASCILAR_MAX];
     Yemek yemekler[YEMEK_MAX];
 
     
@@ -80,14 +94,14 @@ int main(void) {
     size_t yemekSayisi = yemekListesiOku(yemekListesi, yemekler);
 
     fclose(yemekListesi);
-
+/*
     for(int i = 0; i < YEMEK_MAX; ++i){
 
-        printf("ad: %s\nhazirlanmaSuresi: %d\n", yemekler[i].ad, yemekler[i].hazirlanmaSuresi);
-        puts("");
+        //printf("ad: %s\nhazirlanmaSuresi: %d\n", yemekler[i].ad, yemekler[i].hazirlanmaSuresi);
+        //puts("");
 
     }
-
+*/
     /*********************************/
 
     /******** SIPARISLERI OKU *******/
@@ -104,16 +118,28 @@ int main(void) {
 
     size_t siparisSayisi = siparislerOku(siparislerDosyasi, siparisler, SIPARIS_MAX);
 
-    printf("siparisSayisi: %zu\n", siparisSayisi);
+    // printf("siparisSayisi: %zu\n", siparisSayisi);
 
     fclose(siparislerDosyasi);
+
+    // hazirlanma zamanları garbage value önlemek için sıfıra çekiliyor
+    for(size_t i = 0; i < siparisSayisi; ++i) {
+        
+        siparisler[i].hazirlanmaZamani.tm_year = 10;
+        siparisler[i].hazirlanmaZamani.tm_mon = 0;
+        siparisler[i].hazirlanmaZamani.tm_mday = 1;
+        siparisler[i].hazirlanmaZamani.tm_hour = 0;
+        siparisler[i].hazirlanmaZamani.tm_min = 0;
+        siparisler[i].hazirlanmaZamani.tm_sec = 0;
+
+    }
 
     /*  hata ayiklama  */
 
     for(size_t i = 0; i < siparisSayisi; ++i) {
-        printf("%s\n", siparisler[i].ad);
+        //printf("%s\n", siparisler[i].ad);
         strftime(output,17, "%Y-%m-%dT%H.%M", &siparisler[i].siparisZamani);
-        puts(output);
+        //puts(output);
     }
     /*********************************/
 
@@ -209,7 +235,7 @@ int main(void) {
             siparisler[i].atananAsci = &ascilar[asciID];
 
         }
-        
+        /*
         puts("asci algo:");
 
             strftime(output, 17, "%Y-%m-%dT%H.%M", &siparisler[i].siparisZamani);
@@ -234,7 +260,7 @@ int main(void) {
             strftime(output, 17, "%Y-%m-%dT%H.%M", ascilar[asciID].uygunZamani);
             printf("ascilar[%d]->uygunZamani: %s", asciID , output);
             puts("");
-        
+        */
 
     }
         // DOSYAYA İŞLEME
@@ -282,9 +308,11 @@ int main(void) {
 
         fclose(siparislerYeni);
         rename("./veri/siparisler001.csv", "./veri/siparisler.csv");
+
+        puts("Siparisler okundu. Ascilar atandi");
     /*********************************/
 
-
+/*
     // ascilar[0].uygunZamani = &siparisler[0].siparisZamani;  
     
     // asci yapısındaki ilgili pointer'ı sınayan ifadeler
@@ -297,6 +325,7 @@ int main(void) {
     puts(output);
     strftime(output, 17, "%Y-%m-%dT%H.%M", ascilar[0].uygunZamani);
     puts(output);
+*/
 }
 
 void zamanEkle(const struct tm * zaman1,    // aşçının uygun olma zamani
