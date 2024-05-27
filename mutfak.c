@@ -307,6 +307,7 @@ int main(void) {
 
 
         fclose(siparislerYeni);
+        remove(SIPARIS_LISTESI);
         rename("./veri/siparisler001.csv", "./veri/siparisler.csv");
 
         puts("Siparisler okundu. Ascilar atandi");
