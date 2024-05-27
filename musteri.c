@@ -212,7 +212,6 @@ void mevcutSiparisDurumu() {
             "Asci");
     printf("-----------------------------------------------------------------------------------------\n");
 
-
     char satir[MAX_SATIR_UZUNLUGU];
     int siparisBulundu = 0;
     while (fgets(satir, MAX_SATIR_UZUNLUGU, siparisDosyasi) != NULL) {

@@ -409,7 +409,6 @@ size_t yemekListesiOku(FILE * dosya, Yemek yemekler[]) {
 
         yemekSayisi++;
     }
-
     return yemekSayisi;
 }
 
