@@ -350,7 +350,8 @@ void zamanEkle(const struct tm * zaman1,    // aşçının uygun olma zamani
     unixSaniye += eklenecekDakika * 60;
 
     // Convert back to struct tm
-    if (localtime_r(&unixSaniye, zamanOut) == NULL) {
+    zamanOut = localtime(&unixSaniye);
+    if (zamanOut == NULL) {
         puts("Hata: localtime_r() dönüşümü başarısız oldu.");
         return;
     }
