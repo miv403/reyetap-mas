@@ -8,6 +8,7 @@
 #define MAX_SATIR_UZUNLUGU 4096
 #define YEMEK_LISTESI "./veri/yemekListesi.csv"
 #define SIPARIS "./veri/siparisler.csv"
+#define ASCI_DOSYASI "./veri/ascilar.txt"
 #define AD_MAX 50
 #define YEMEK_MAX 20
 
@@ -26,6 +27,7 @@ void yemekListesiSecenekler();
 void raporArayuzu();
 void raporGoruntule(const char* date);
 void csvYaz0(FILE *dosya,  int hucreSayisi, ... );
+void asciSayisiBelirle();
 
 int main() {
     int secim;
@@ -38,7 +40,8 @@ int main() {
         printf("2. Yeni Siparisleri Denetle\n");
         printf("3. Gunluk Rapor Al\n");
         printf("4. Analiz\n");
-        printf("5. Cikis\n");
+        printf("5. Asci Sayisi Belirle\n");
+        printf("6. Cikis\n");
         printf("Seciminizi yapiniz: ");
         scanf("%d", &secim);
 
@@ -50,6 +53,7 @@ int main() {
                 break;
             case 2:
                 yeniSiparisleriGoster();
+                // RET ONAY
                 break;
             case 3: // Gunluk Rapor 
                 raporArayuzu();
@@ -58,6 +62,10 @@ int main() {
                 // ANALİZ
                 break;
             case 5:
+                // AŞÇI SAYISI
+                asciSayisiBelirle();
+                break;
+            case 6:
                 printf("Programdan cikis yapiliyor.\n");
                 exit(0);
             default:
@@ -436,4 +444,23 @@ void csvYaz0(FILE *dosya,  int hucreSayisi, ... ) {
     //fprintf(dosya, "\n");
 
     va_end(args);
+}
+
+void asciSayisiBelirle() {
+
+    puts("");
+    FILE * asciDosyasi;
+    asciDosyasi = fopen(ASCI_DOSYASI, "r");
+    char asciSayisi[10];
+    fgets(asciSayisi, 9, asciDosyasi);
+    printf("Su an %s asci var.", asciSayisi);
+    fclose(asciDosyasi);
+    asciDosyasi = fopen(ASCI_DOSYASI, "w");
+    printf("Asci sayisi belirleyin: ");
+    int asciWrite = 0;
+    scanf("%d", &asciWrite);
+
+    fprintf(asciDosyasi, "%d", asciWrite);
+    puts("Ascilar atandı.");
+    fclose(asciDosyasi);
 }
