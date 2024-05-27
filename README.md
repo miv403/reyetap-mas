@@ -1,9 +1,10 @@
+<!--BELGEYİ DÜZENLEYECEK KİŞİ: 
+
 ---
 date: 2024-05-05
 lastChange: 2024-05-05#mvarr
 ---
 
-<!--BELGEYİ DÜZENLEYECEK KİŞİ: 
     - girintiler iki boşluk olacak biçimide yazılmıştır.
     - üstteki `lastChange` girdisini uygun biçimide değiştirebilirsin
     - eklediğin yapılacaklar girdisinin sonuna `~~~~isim` yazman güzel olabilir.
