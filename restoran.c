@@ -10,7 +10,7 @@
 #define SIPARIS "./veri/siparisler.csv"
 #define ASCI_DOSYASI "./veri/ascilar.txt"
 #define AD_MAX 50
-#define YEMEK_MAX 20
+#define YEMEK_MAX 100
 
 typedef struct {
     char ad[AD_MAX];
@@ -200,10 +200,53 @@ void yemekEkle() {
 
 void yemekSil() {
 
+    Yemek yemekler[YEMEK_MAX];
 
+    FILE * yemekListesi;
+    yemekListesi = fopen(YEMEK_LISTESI, "r");
+
+    size_t yemekSayisi = yemekListesiOku(yemekListesi,yemekler);
+
+    fclose(yemekListesi);
+
+    printf("Silmek istediginiz yemek adi: ");
+    char kullaniciYemekIN[AD_MAX];
+    
+    scanf("%49s", kullaniciYemekIN);
+
+    printf("%s a\n", kullaniciYemekIN);
+    
+    int j = 0;
+
+    for(; j < yemekSayisi; ++j) {
+        if(strcmp(kullaniciYemekIN, yemekler[j].ad) == 0){
+            break;
+        }
+    }
+    printf("%d\n", j);
+    
+    FILE *yemekListeYENI;
+
+    yemekListeYENI = fopen("./veri/yemekListesi0.csv", "w");
+
+    fprintf(yemekListeYENI, "yemekAdi,yemekFiyati,hazirlanmaSuresi,durum\n");
+    // yemek listesini tekrar yazdir
+    for(size_t i = 0; i < yemekSayisi; ++i) {
+
+        if(i == j) continue;
+
+        csvYaz0(yemekListeYENI, 4,
+                yemekler[i].ad,
+                yemekler[i].fiyat,
+                yemekler[i].sure,
+                yemekler[i].durum);
+    }
+    fprintf(yemekListeYENI, "\n");
+    fclose(yemekListeYENI);
+
+    remove(YEMEK_LISTESI);
+    rename("./veri/yemekListesi0.csv",YEMEK_LISTESI);
 }
-
-// TODO: yemek güncelleme
 
 void yemekGuncelle() {
 
