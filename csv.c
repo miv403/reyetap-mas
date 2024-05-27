@@ -138,9 +138,9 @@ int yemekListesiYazdir(FILE *dosya,      // okunacak dosya işaretçisi
                             if(*hucre == 't' || *hucre == 'T') {
                             // yemekListesi için bu hucre bool degerdedir
                             // FIXME bool icin geçici çözüm baş karakter
-                                printf("%-10s", "✓");
+                                printf("%-10s", "+");
                             } else {
-                                printf("%-10s", "⨯");
+                                printf("%-10s", "-");
                             }
                             puts("");
                             break;
